@@ -1,0 +1,121 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------------------------------- */
+/* FONTE GLOBAL                       */
+/* ---------------------------------- */
+body {
+  @apply text-gray-700 font-sans antialiased;
+}
+
+/* ---------------------------------- */
+/* RESET                              */
+/* ---------------------------------- */
+html, body {
+  min-height: 100%;
+}
+
+/* ---------------------------------- */
+/* SCROLLBAR                          */
+/* ---------------------------------- */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+/* ---------------------------------- */
+/* CORES DO TEMA (CONTRASTE AJUSTADO) */
+/* ---------------------------------- */
+:root {
+  --brand: #0047cc;
+  --brand-dark: #002f80;
+  --brand-darker: #001f4d;
+  --brand-soft: #e6efff;
+}
+
+.bg-brand {
+  background-color: var(--brand);
+}
+.text-brand {
+  color: var(--brand);
+}
+
+/* ---------------------------------- */
+/* INPUT PADRÃO                       */
+/* ---------------------------------- */
+.input-base {
+  @apply w-full px-4 py-3 rounded-lg border border-gray-300 bg-white
+         text-gray-800 shadow-sm outline-none transition
+         focus:ring-2 focus:ring-[var(--brand)]
+         focus:border-[var(--brand)];
+}
+
+/* ---------------------------------- */
+/* BOTÃO PRINCIPAL                    */
+/* ---------------------------------- */
+.btn-primary {
+  @apply w-full py-3 rounded-lg text-white font-semibold shadow-md transition
+         disabled:opacity-60 disabled:cursor-not-allowed;
+  background: linear-gradient(
+    135deg,
+    var(--brand),
+    var(--brand-dark)
+  );
+}
+
+.btn-primary:hover {
+  background: linear-gradient(
+    135deg,
+    var(--brand-dark),
+    var(--brand-darker)
+  );
+}
+
+/* ---------------------------------- */
+/* ANIMAÇÃO                          */
+/* ---------------------------------- */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.25s ease-out;
+}
+
+/* ---------------------------------- */
+/* LEAFLET FIX                        */
+/* ---------------------------------- */
+.leaflet-container {
+  height: 100%;
+  width: 100%;
+  background: #fff;
+}
+
+.leaflet-pane {
+  z-index: 1;
+}
+
+.leaflet-top,
+.leaflet-bottom {
+  z-index: 2;
+}
+
+.leaflet-control {
+  z-index: 3;
+}
+
+

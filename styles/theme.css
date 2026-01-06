@@ -1,0 +1,189 @@
+/* sales_router_frontend/styles/theme.css */
+
+/* ================================================================
+   🎨 PALETA OFICIAL DO SALESROUTER — Revisada e Profissional
+   ================================================================= */
+
+:root {
+  /* BRAND COLORS */
+  --brand-primary: #0050d4;
+  --brand-secondary: #003a9b;
+  --brand-soft: #e8f0ff;
+  --brand-soft-hover: #d8e6ff;
+
+  /* GRAYS / NEUTRALS */
+  --neutral-50: #f7f9fc;
+  --neutral-100: #eef2f7;
+  --neutral-200: #e3e7ef;
+  --neutral-300: #c8cdd8;
+  --neutral-400: #9aa0b1;
+  --neutral-700: #3f4655;
+  --neutral-900: #1f2530;
+
+  /* BORDERS */
+  --neutral-border: #e3e7ef;
+
+  /* FEEDBACK */
+  --success: #1e9e55;
+  --warning: #f2a900;
+  --danger: #e53935;
+
+  /* SHADOWS */
+  --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.06);
+  --shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+/* ================================================================
+   🔘 BOTÕES
+   ================================================================= */
+
+/* Botão primário (azul) */
+.btn-primary {
+  background-color: var(--brand-primary);
+  color: white;
+  padding: 12px 22px;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: 0.2s;
+  box-shadow: var(--shadow-soft);
+}
+
+.btn-primary:hover {
+  background-color: var(--brand-secondary);
+}
+
+/* Botão neutro */
+.btn-neutral {
+  background-color: var(--neutral-200);
+  color: var(--neutral-900);
+  padding: 12px 22px;
+  border-radius: 8px;
+  transition: 0.2s;
+}
+
+.btn-neutral:hover {
+  background-color: var(--neutral-300);
+}
+
+/* Botão de perigo */
+.btn-danger {
+  background-color: var(--danger);
+  color: white;
+  padding: 12px 22px;
+  border-radius: 8px;
+  transition: 0.2s;
+}
+
+.btn-danger:hover {
+  background-color: #c62828;
+}
+
+/* ================================================================
+   🪟 MODAIS
+   ================================================================= */
+
+.modal-bg {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0,0,0,0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-card {
+  background: white;
+  padding: 2rem; /* p-8 */
+  border-radius: 0.75rem; /* rounded-xl */
+  box-shadow: var(--shadow-card);
+  position: relative;
+}
+
+.modal-close {
+  position: absolute;
+  right: 1rem; /* right-4 */
+  top: 1rem;   /* top-4 */
+  color: #4b5563; /* text-gray-700 */
+  transition: .2s;
+}
+
+.modal-close:hover {
+  color: black;
+}
+
+
+/* ================================================================
+   📦 CARDS
+   ================================================================= */
+
+.card {
+  background: white;
+  border: 1px solid var(--neutral-border);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: var(--shadow-card);
+}
+
+.card-soft {
+  background: var(--neutral-50);
+  border-radius: 14px;
+  padding: 20px;
+}
+
+/* ================================================================
+   🧹 INPUTS / FORMS
+   ================================================================= */
+
+.input {
+  border: 1px solid var(--neutral-300);
+  padding: 12px;
+  border-radius: 8px;
+  width: 100%;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 2px var(--brand-soft);
+}
+
+/* ================================================================
+   🌐 LINKS
+   ================================================================= */
+
+.link {
+  color: var(--brand-primary);
+  font-weight: 500;
+}
+
+.link:hover {
+  color: var(--brand-secondary);
+}
+
+/* ================================================================
+   🗃 TABLES
+   ================================================================= */
+
+.table-header {
+  background: var(--neutral-100);
+  color: var(--neutral-700);
+  font-weight: 600;
+}
+
+.table-row:hover {
+  background-color: var(--brand-soft);
+}
+
+/* ================================================================
+   ✔ COMPONENTES GERAIS
+   ================================================================= */
+
+.section-title {
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: var(--neutral-900);
+}
+
+.subtle {
+  color: var(--neutral-400);
+}
