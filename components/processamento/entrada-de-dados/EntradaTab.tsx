@@ -227,7 +227,7 @@ export default function EntradaTab() {
                 onClick={() => downloadInvalidos(resumo.jobId)}
                 className="px-4 py-2 bg-red-600 text-white rounded-md text-sm"
               >
-                Baixar inválidos (CSV)
+                Baixar inválidos (XLSX)
               </button>
             )}
           </div>

@@ -107,7 +107,9 @@ export async function downloadInvalidos(job_id: string) {
   const url = window.URL.createObjectURL(res.data);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `invalidos_${job_id}.csv`;
+  a.download = `pdvs_invalidos_${job_id}.xlsx`;
+  a.type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
   a.click();
 }
 
