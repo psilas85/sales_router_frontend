@@ -9,6 +9,8 @@ import {
   PDVLocal,
   PDVLocalEdicao,
 } from "@/services/pdv";
+import { useNormalizeText } from "@/hooks/useNormalizeText";
+
 
 import dynamic from "next/dynamic";
 import "leaflet/dist/leaflet.css";
@@ -18,6 +20,9 @@ import { Map, ChevronLeft, ChevronRight, X } from "lucide-react";
 const MapaModal = dynamic(() => import("./PdvMapaModal"), { ssr: false });
 
 export default function LocaisTab() {
+
+  const { normalize } = useNormalizeText();
+  
   // -------------------------
   // FILTROS
   // -------------------------
@@ -69,12 +74,18 @@ export default function LocaisTab() {
       setCarregando(true);
       setPagina(1);
 
-      const params: any = { input_id: inputId, uf };
-      if (cidade) params.cidade = cidade;
+      const params: any = {
+        input_id: inputId.trim(),
+        uf: normalize(uf),
+      };
+
+
+      if (cidade) params.cidade = normalize(cidade);
       if (cnpj) params.cnpj = cnpj;
-      if (logradouro) params.logradouro = logradouro;
-      if (bairro) params.bairro = bairro;
+      if (logradouro) params.logradouro = normalize(logradouro);
+      if (bairro) params.bairro = normalize(bairro);
       if (cep) params.cep = cep;
+
 
       const res = await buscarLocais(params);
       setLista(res.pdvs || []);
@@ -93,21 +104,27 @@ export default function LocaisTab() {
 
     const payload: PDVLocalEdicao = {
       id: editando.id,
-      logradouro: editando.logradouro,
-      numero: editando.numero,
-      bairro: editando.bairro,
-      cidade: editando.cidade,
-      uf: editando.uf,
-      cep: editando.cep,
+      logradouro: normalize(editando.logradouro),
+      numero: editando.numero.trim(),
+      bairro: normalize(editando.bairro),
+      cidade: normalize(editando.cidade),
+      uf: normalize(editando.uf),
+      cep: editando.cep.replace(/\D/g, ""),
       pdv_lat: Number(editando.pdv_lat),
       pdv_lon: Number(editando.pdv_lon),
     };
 
     try {
       await editarLocal(payload);
+
       setLista((old) =>
-        old.map((p) => (p.id === editando.id ? editando : p))
+        old.map((p) =>
+          p.id === editando.id
+            ? { ...editando, ...payload }
+            : p
+        )
       );
+
       setEditando(null);
     } catch {
       alert("Erro ao salvar.");
