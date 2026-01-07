@@ -379,7 +379,11 @@ export default function NovaRoteirizacao() {
                     {/* Ação */}
                     <td className="px-2 whitespace-nowrap">
                       <button
-                        onClick={() => setSelecionada(c)}
+                        onClick={() => {
+                          setSelecionada(null);
+                          setTimeout(() => setSelecionada(c), 0);
+                        }}
+
                         disabled={!podeRoteirizar}
                         title={
                           podeRoteirizar
@@ -527,9 +531,14 @@ export default function NovaRoteirizacao() {
       </div>
 
       {/* DRAWERS */}
-      <RoutingParamsDrawer open={!!selecionada} onClose={() => setSelecionada(null)}>
+      <RoutingParamsDrawer
+        key={selecionada?.clusterization_id || "routing-drawer"}
+        open={!!selecionada}
+        onClose={() => setSelecionada(null)}
+      >
         {selecionada && (
           <ParametrosRoteirizacao
+            key={selecionada.clusterization_id}
             clusterizationId={selecionada.clusterization_id}
             uf={selecionada.uf}
             cidade={selecionada.cidade || null}
@@ -537,6 +546,7 @@ export default function NovaRoteirizacao() {
           />
         )}
       </RoutingParamsDrawer>
+
 
       <RoutingProgressDrawer
         open={mostrarProgresso}
