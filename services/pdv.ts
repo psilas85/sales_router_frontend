@@ -51,6 +51,13 @@ export interface PDVLocalEdicao {
   pdv_lon: number;
 }
 
+export interface PDVLocalCoords {
+  id: number;
+  pdv_lat: number;
+  pdv_lon: number;
+}
+
+
 // ============================================================
 // UPLOAD CSV
 // ============================================================
@@ -139,21 +146,18 @@ export async function buscarLocais(params: any): Promise<{
 // ============================================================
 
 export async function editarLocal(
-  data: PDVLocalEdicao
-): Promise<PDVLocalEdicao | null> {
-  const res = await api.put(`/pdv/locais/${data.id}`, data);
+  data: PDVLocalCoords
+): Promise<PDVLocalCoords | null> {
+  const res = await api.put(`/pdv/locais/${data.id}`, {
+    pdv_lat: data.pdv_lat,
+    pdv_lon: data.pdv_lon,
+  });
 
   const pdv = res.data?.pdv;
   if (!pdv) return null;
 
   return {
     id: pdv.id,
-    logradouro: pdv.logradouro || "",
-    numero: pdv.numero || "",
-    bairro: pdv.bairro || "",
-    cidade: pdv.cidade || "",
-    uf: pdv.uf || "",
-    cep: pdv.cep || "",
     pdv_lat: Number(pdv.pdv_lat),
     pdv_lon: Number(pdv.pdv_lon),
   };

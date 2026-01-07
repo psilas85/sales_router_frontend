@@ -1,4 +1,5 @@
 //sales_router_frontend/components/processamento/LocaisTab.tsx
+
 "use client";
 
 import { useState } from "react";
@@ -7,7 +8,6 @@ import {
   editarLocal,
   excluirLocal,
   PDVLocal,
-  PDVLocalEdicao,
 } from "@/services/pdv";
 import { useNormalizeText } from "@/hooks/useNormalizeText";
 
@@ -100,36 +100,32 @@ export default function LocaisTab() {
   // SALVAR
   // -------------------------
   async function salvarEdicao() {
-    if (!editando) return;
+  if (!editando) return;
 
-    const payload: PDVLocalEdicao = {
+  try {
+    await editarLocal({
       id: editando.id,
-      logradouro: normalize(editando.logradouro),
-      numero: editando.numero.trim(),
-      bairro: normalize(editando.bairro),
-      cidade: normalize(editando.cidade),
-      uf: normalize(editando.uf),
-      cep: editando.cep.replace(/\D/g, ""),
       pdv_lat: Number(editando.pdv_lat),
       pdv_lon: Number(editando.pdv_lon),
-    };
+    });
 
-    try {
-      await editarLocal(payload);
+    setLista((old) =>
+      old.map((p) =>
+        p.id === editando.id
+          ? {
+              ...p,
+              pdv_lat: Number(editando.pdv_lat),
+              pdv_lon: Number(editando.pdv_lon),
+            }
+          : p
+      )
+    );
 
-      setLista((old) =>
-        old.map((p) =>
-          p.id === editando.id
-            ? { ...editando, ...payload }
-            : p
-        )
-      );
-
-      setEditando(null);
-    } catch {
-      alert("Erro ao salvar.");
-    }
+    setEditando(null);
+  } catch {
+    alert("Erro ao salvar.");
   }
+}
 
   // -------------------------
   // EXCLUIR
