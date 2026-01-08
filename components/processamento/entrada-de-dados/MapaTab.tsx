@@ -72,10 +72,13 @@ export default function MapaTab() {
 
       setJobs(res.jobs || []);
       setTotal(res.total || 0);
+
+      return res.jobs || []; // 🔥 ESSENCIAL
     } finally {
       setLoading(false);
     }
   }
+
 
   // =========================================================
   // FILTRO
@@ -109,12 +112,35 @@ export default function MapaTab() {
         { id: toastId }
       );
 
+      // 🔁 polling de status
+      let tentativas = 0;
+      const maxTentativas = 10; // ~30s
+
+      const interval = setInterval(async () => {
+        tentativas++;
+
+        const lista = await carregar();
+        const job = lista.find((j: any) => j.input_id === inputId);
+
+        if (job?.status === "done" || job?.status === "success") {
+          clearInterval(interval);
+          toast.success("Mapa gerado com sucesso.");
+          setGerando(null);
+        }
+
+        if (tentativas >= maxTentativas) {
+          clearInterval(interval);
+          toast("Mapa ainda em processamento.", { icon: "⏳" });
+          setGerando(null);
+        }
+      }, 3000);
+
     } catch {
       toast.error("Erro ao gerar mapa.", { id: toastId });
-    } finally {
       setGerando(null);
     }
   }
+
 
 
   function handleAbrirMapa(job: any) {
