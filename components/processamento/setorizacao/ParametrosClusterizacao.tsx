@@ -190,7 +190,6 @@ export default function ParametrosClusterizacao({ inputId, onClose }: Props) {
           Executar
         </button>
 
-
       </div>
     </div>
   );
