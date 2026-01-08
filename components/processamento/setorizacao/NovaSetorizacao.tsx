@@ -83,21 +83,20 @@ function StatusBadge({ status }: { status?: string }) {
   }
 
   const meta =
-    STATUS_MAP[status] ??
-    {
+    STATUS_MAP[status] ?? {
       label: status,
       className: "bg-gray-100 text-gray-700",
     };
 
   return (
     <span
-      className={`px-2 py-0.5 rounded-full text-[11px] font-semibold ${meta.className}`}
+      className={`px-2 py-0.5 rounded-full text-xs font-medium ${meta.className}`}
     >
-
       {meta.label}
     </span>
   );
 }
+
 
 
 
@@ -228,7 +227,7 @@ export default function NovaSetorizacao() {
           Setorização
         </h1>
         <p className="text-[11px] text-gray-500">
-          Selecione um input para executar a clusterização
+          Selecione um input para executar a setorização
         </p>
       </div>     
       
@@ -347,6 +346,7 @@ export default function NovaSetorizacao() {
                   >
                     {shortId(i.input_id)}
                   </td>
+
 
                   {/* PDVs */}
                   <td className="px-2 py-1 text-sm text-center">
@@ -475,6 +475,7 @@ export default function NovaSetorizacao() {
                   {shortId(c.clusterization_id)}
                 </td>
 
+
                 {/* REGIÃO */}
                 <td className="px-2 py-1 text-center text-sm whitespace-nowrap">
                   {c.uf} · {c.cidade}
@@ -510,8 +511,6 @@ export default function NovaSetorizacao() {
           </tbody>
         </table>
       </CollapsibleSection>
-
-
 
       {/* DRAWERS */}
       <ClusterParamsDrawer
