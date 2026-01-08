@@ -8,6 +8,8 @@ import {
   filtrarJobsPDV,
   gerarMapa,
 } from "@/services/pdv";
+import toast from "react-hot-toast";
+
 
 // ===============================
 // Utils
@@ -94,23 +96,36 @@ export default function MapaTab() {
   // MAPA
   // =========================================================
   async function handleGerarMapa(inputId: string) {
+    if (gerando === inputId) return;
+
+    setGerando(inputId);
+    const toastId = toast.loading("Gerando mapa...");
+
     try {
-      setGerando(inputId);
       await gerarMapa(inputId);
-      alert("Mapa gerado com sucesso.");
+
+      toast.success(
+        "Mapa em geração. Aguardando conclusão...",
+        { id: toastId }
+      );
+
     } catch {
-      alert("Erro ao gerar mapa.");
+      toast.error("Erro ao gerar mapa.", { id: toastId });
     } finally {
       setGerando(null);
     }
   }
 
+
   function handleAbrirMapa(job: any) {
     const base = process.env.NEXT_PUBLIC_API_URL;
     const nomeArquivo = `pdvs_${job.input_id}_BR.html`;
     const url = `${base}/output/maps/${job.tenant_id}/${nomeArquivo}`;
+
+    toast("Abrindo mapa...", { icon: "🗺️" });
     window.open(url, "_blank");
   }
+
 
   const totalPaginas = Math.ceil(total / LIMIT);
 
@@ -205,7 +220,12 @@ export default function MapaTab() {
                           <button
                             disabled={gerando === j.input_id}
                             onClick={() => handleGerarMapa(j.input_id)}
-                            className="px-3 py-1 rounded-md text-xs bg-blue-600 text-white"
+                            className={`px-3 py-1 rounded-md text-xs text-white ${
+                              gerando === j.input_id
+                                ? "bg-gray-400 cursor-not-allowed"
+                                : "bg-blue-600 hover:opacity-95"
+                            }`}
+
                           >
                             {gerando === j.input_id
                               ? "Gerando..."
