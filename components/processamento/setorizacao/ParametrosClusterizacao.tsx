@@ -43,30 +43,41 @@ export default function ParametrosClusterizacao({ inputId, onClose }: Props) {
   }
 
   async function enviar() {
-    if (!uf || !descricao) {
-      alert("UF e descrição são obrigatórias");
-      return;
-    }
-
-    reset();
-
-    const payload: any = {
-      input_id: inputId,
-      uf,
-      cidade: cidade || null,
-      descricao,
-      algo,
-      ...formVals,
-    };
-
-    const r = await criarClusterizacao(payload);
-
-    setJob(r.job_id);
-    onClose();
-
-    window.dispatchEvent(new Event("abrir-progresso-cluster"));
-    window.dispatchEvent(new Event("expandir-historico-cluster"));
+  if (!uf || !descricao) {
+    alert("UF e descrição são obrigatórias");
+    return;
   }
+
+  if (algo === "capacitated_sweep" && !cidade.trim()) {
+    alert("Cidade é obrigatória para a estratégia DIVISOR");
+    return;
+  }
+
+  reset();
+
+  const payload: any = {
+    input_id: inputId,
+    uf,
+    cidade: cidade || null,
+    descricao,
+    algo,
+    ...formVals,
+  };
+
+  const r = await criarClusterizacao(payload);
+
+  setJob(r.job_id);
+  onClose();
+
+  window.dispatchEvent(new Event("abrir-progresso-cluster"));
+  window.dispatchEvent(new Event("expandir-historico-cluster"));
+}
+
+  const podeExecutar =
+  uf &&
+  descricao &&
+  (algo !== "capacitated_sweep" || cidade.trim());
+
 
   return (
     <div className="space-y-5">
@@ -92,13 +103,16 @@ export default function ParametrosClusterizacao({ inputId, onClose }: Props) {
 
       {/* CIDADE */}
       <div>
-        <label className="block mb-1 font-medium">Cidade</label>
+        <label className="block mb-1 font-medium">
+          Cidade {algo === "capacitated_sweep" && "*"}
+        </label>
         <input
           value={cidade}
           onChange={(e) => setCidade(e.target.value)}
           className="w-full border p-3 rounded"
         />
       </div>
+
 
       {/* DESCRIÇÃO */}
       <div>
@@ -168,10 +182,15 @@ export default function ParametrosClusterizacao({ inputId, onClose }: Props) {
 
         <button
           onClick={enviar}
-          className="px-6 py-2 bg-brand text-white rounded"
+          disabled={!podeExecutar}
+          className={`px-6 py-2 rounded text-white
+            ${podeExecutar ? "bg-brand" : "bg-gray-400 cursor-not-allowed"}
+          `}
         >
           Executar
         </button>
+
+
       </div>
     </div>
   );
