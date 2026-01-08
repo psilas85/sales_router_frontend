@@ -340,12 +340,22 @@ export default function NovaSetorizacao() {
                   </td>
 
                   {/* INPUT ID */}
-                  <td
-                    className="px-2 py-1 text-sm font-mono text-gray-600 truncate whitespace-nowrap"
-                    title={i.input_id}
-                  >
-                    {shortId(i.input_id)}
+                  <td className="px-2 py-1 text-sm font-mono text-gray-600 whitespace-nowrap">
+                    <div className="flex items-center gap-1">
+                      <span title={i.input_id}>
+                        {shortId(i.input_id)}
+                      </span>
+
+                      <button
+                        onClick={() => navigator.clipboard.writeText(i.input_id)}
+                        className="text-gray-400 hover:text-gray-700"
+                        title="Copiar Input ID"
+                      >
+                        📋
+                      </button>
+                    </div>
                   </td>
+
 
 
                   {/* PDVs */}
@@ -468,12 +478,24 @@ export default function NovaSetorizacao() {
                 </td>
 
                 {/* CLUSTERIZATION ID */}
-                <td
-                  className="px-2 py-1 text-sm font-mono text-gray-600 truncate whitespace-nowrap"
-                  title={c.clusterization_id}
-                >
-                  {shortId(c.clusterization_id)}
+                <td className="px-2 py-1 text-sm font-mono text-gray-600 whitespace-nowrap">
+                  <div className="flex items-center gap-1">
+                    <span title={c.clusterization_id}>
+                      {shortId(c.clusterization_id)}
+                    </span>
+
+                    <button
+                      onClick={() =>
+                        navigator.clipboard.writeText(c.clusterization_id)
+                      }
+                      className="text-gray-400 hover:text-gray-700"
+                      title="Copiar Clusterization ID"
+                    >
+                      📋
+                    </button>
+                  </div>
                 </td>
+
 
 
                 {/* REGIÃO */}
