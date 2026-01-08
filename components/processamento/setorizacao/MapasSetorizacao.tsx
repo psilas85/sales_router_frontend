@@ -8,6 +8,8 @@ import {
   listarHistoricoClusterizacoes,
   gerarMapa,
 } from "@/services/cluster";
+import toast from "react-hot-toast";
+
 
 // ===============================
 // Utils
@@ -60,6 +62,9 @@ export default function MapasSetorizacao() {
   const [clusterizacoes, setClusterizacoes] = useState<any[]>([]);
   const [total, setTotal] = useState(0);
   const [pagina, setPagina] = useState(0);
+  const [gerandoMapaId, setGerandoMapaId] = useState<string | null>(null);
+
+
 
   // filtros
   const [dataInicio, setDataInicio] = useState("");
@@ -113,31 +118,64 @@ export default function MapasSetorizacao() {
     setDescricaoFiltro("");
     setFiltroAplicado({ dataInicio: "", dataFim: "", descricao: "" });
   }
+  
 
   async function handleGerarMapa(clusterization_id: string) {
+    if (gerandoMapaId === clusterization_id) return;
+
+    setGerandoMapaId(clusterization_id);
+    const toastId = toast.loading("Gerando mapa...");
+
     try {
       await gerarMapa(clusterization_id);
-      alert("Mapa gerado com sucesso");
-    } catch (e: any) {
-      alert(
-        e?.response?.data?.detail ||
-          "Erro ao gerar mapa. Verifique o backend."
+
+      toast.success(
+        "Mapa em geração. Pode levar alguns segundos.",
+        { id: toastId }
       );
+    } catch (e: any) {
+      toast.error(
+        e?.response?.data?.detail || "Erro ao gerar mapa.",
+        { id: toastId }
+      );
+    } finally {
+      setGerandoMapaId(null);
     }
   }
 
-  function abrirMapa(clusterization_id: string) {
+ 
+
+  async function abrirMapa(clusterization_id: string) {
     const base = process.env.NEXT_PUBLIC_API_URL;
     const tenantId = useAuthStore.getState().user?.tenant_id;
 
     if (!tenantId) {
-      alert("Tenant não identificado. Faça login novamente.");
+      toast.error("Tenant não identificado. Faça login novamente.");
       return;
     }
 
     const url = `${base}/output/maps/${tenantId}/clusterization_${clusterization_id}.html`;
-    window.open(url, "_blank");
+
+    const toastId = toast.loading("Verificando mapa...");
+
+    try {
+      const res = await fetch(url, { method: "HEAD" });
+
+      if (!res.ok) {
+        throw new Error("not_found");
+      }
+
+      toast.dismiss(toastId);
+      window.open(url, "_blank");
+
+    } catch {
+      toast.error(
+        "Nenhum mapa encontrado. Gere o mapa primeiro.",
+        { id: toastId }
+      );
+    }
   }
+
 
   return (
     <div className="space-y-4">
@@ -259,20 +297,33 @@ export default function MapasSetorizacao() {
                   <td className="px-2 text-center whitespace-nowrap">
                     <div className="flex gap-2 justify-center">
                       <button
+                        disabled={gerandoMapaId === c.clusterization_id}
                         onClick={() => handleGerarMapa(c.clusterization_id)}
-                        className="px-3 py-1 rounded-md text-xs bg-blue-600 text-white hover:opacity-95"
+                        className={`px-3 py-1 rounded-md text-xs text-white ${
+                          gerandoMapaId === c.clusterization_id
+                            ? "bg-gray-400 cursor-not-allowed"
+                            : "bg-blue-600 hover:opacity-95"
+                        }`}
                       >
-                        Gerar mapa
+                        {gerandoMapaId === c.clusterization_id
+                          ? "Gerando..."
+                          : "Gerar mapa"}
                       </button>
 
                       <button
+                        disabled={c.status !== "done" && c.status !== "success"}
                         onClick={() => abrirMapa(c.clusterization_id)}
-                        className="px-3 py-1 rounded-md text-xs bg-brand text-white hover:opacity-95"
+                        className={`px-3 py-1 rounded-md text-xs text-white ${
+                          c.status === "done" || c.status === "success"
+                            ? "bg-brand hover:opacity-95"
+                            : "bg-gray-300 cursor-not-allowed"
+                        }`}
                       >
                         Abrir mapa
                       </button>
                     </div>
                   </td>
+
                 </tr>
               ))}
 
