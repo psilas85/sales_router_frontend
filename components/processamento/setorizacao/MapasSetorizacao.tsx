@@ -173,7 +173,7 @@ export default function MapasSetorizacao() {
     }
   }
 
-  async function abrirMapa(clusterization_id: string) {
+  function abrirMapa(clusterization_id: string) {
     const base = process.env.NEXT_PUBLIC_API_URL;
     const tenantId = useAuthStore.getState().user?.tenant_id;
 
@@ -184,25 +184,8 @@ export default function MapasSetorizacao() {
 
     const url = `${base}/output/maps/${tenantId}/clusterization_${clusterization_id}.html`;
 
-    const toastId = toast.loading("Verificando mapa...");
-
-    try {
-      const res = await fetch(url, { method: "GET" });
-
-
-      if (!res.ok) {
-        throw new Error("not_found");
-      }
-
-      toast.dismiss(toastId);
-      window.open(url, "_blank");
-
-    } catch {
-      toast.error(
-        "Nenhum mapa encontrado. Gere o mapa primeiro.",
-        { id: toastId }
-      );
-    }
+    toast("Abrindo mapa...", { icon: "🗺️" });
+    window.open(url, "_blank");
   }
 
 
