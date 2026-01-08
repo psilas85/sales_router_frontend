@@ -8,6 +8,7 @@ import {
   exportarResumoRouting,
   exportarPDVsRouting,
 } from "@/services/routing";
+import toast from "react-hot-toast";
 
 // ===============================
 function formatDate(value?: string) {
@@ -32,6 +33,9 @@ export default function RelatoriosRoteirizacao() {
   const [dataInicio, setDataInicio] = useState("");
   const [dataFim, setDataFim] = useState("");
   const [descricao, setDescricao] = useState("");
+
+  const [exportandoId, setExportandoId] = useState<string | null>(null);
+
 
   async function carregar(p = 0) {
     setLoading(true);
@@ -146,30 +150,56 @@ export default function RelatoriosRoteirizacao() {
                 </td>
                 <td className="px-2 flex gap-2">
                   <button
+                    disabled={exportandoId === r.routing_id}
                     onClick={async () => {
-                      const res = await exportarResumoRouting(r.routing_id);
-                      window.open(
-                        `${process.env.NEXT_PUBLIC_API_URL}/${res.arquivo}`,
-                        "_blank"
-                      );
+                      setExportandoId(r.routing_id);
+                      try {
+                        const res = await exportarResumoRouting(r.routing_id);
+
+                        if (!res?.arquivo) {
+                          throw new Error("Arquivo não gerado");
+                        }
+
+                        window.open(
+                          `${process.env.NEXT_PUBLIC_API_URL}/${res.arquivo}`,
+                          "_blank"
+                        );
+                      } catch {
+                        toast.error("Erro ao exportar resumo.");
+                      }
+                      finally {
+                        setExportandoId(null);
+                      }
                     }}
-                    className="bg-blue-600 text-white px-2 py-1 rounded text-xs"
+
+                    className="bg-blue-600 text-white px-2 py-1 rounded text-xs disabled:opacity-50"
                   >
-                    Resumo
+                    {exportandoId === r.routing_id ? "Gerando..." : "Resumo"}
                   </button>
 
+
                   <button
-                    onClick={async () => {
+                  onClick={async () => {
+                    try {
                       const res = await exportarPDVsRouting(r.routing_id);
+
+                      if (!res?.arquivo) {
+                        throw new Error("Arquivo não gerado");
+                      }
+
                       window.open(
                         `${process.env.NEXT_PUBLIC_API_URL}/${res.arquivo}`,
                         "_blank"
                       );
-                    }}
-                    className="bg-brand text-white px-2 py-1 rounded text-xs"
-                  >
-                    PDVs
-                  </button>
+                    } catch (e) {
+                      toast.error("Erro ao gerar relatório de PDVs.");
+                    }
+                  }}
+                  className="bg-brand text-white px-2 py-1 rounded text-xs"
+                >
+                  PDVs
+                </button>
+
                 </td>
               </tr>
             ))}
