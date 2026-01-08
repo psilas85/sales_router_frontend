@@ -294,26 +294,26 @@ export default function NovaSetorizacao() {
 
         {/* TABELA INPUTS */}
         <div className="overflow-x-auto">
-          <table className="w-full text-sm table-auto">
+          <table className="w-full table-fixed text-sm">
             <thead className="bg-gray-50 border-b">
               <tr>
-                <th className="px-2 py-1 text-left font-semibold w-[120px]">
+                <th className="px-2 py-1 text-left font-semibold text-xs w-[120px]">
                   Data
                 </th>
 
-                <th className="px-2 py-1 text-left font-semibold w-[35%]">
+                <th className="px-2 py-1 text-left font-semibold text-xs w-[35%]">
                   Descrição
                 </th>
 
-                <th className="px-2 py-1 text-left font-semibold w-[260px]">
+                <th className="px-2 py-1 text-left font-semibold text-xs w-[260px]">
                   Input ID
                 </th>
 
-                <th className="px-2 py-1 text-center font-semibold w-[70px]">
+                <th className="px-2 py-1 text-center font-semibold text-xs w-[70px]">
                   PDVs
                 </th>
 
-                <th className="px-2 py-1 text-center font-semibold w-[110px]">
+                <th className="px-2 py-1 text-center font-semibold text-xs w-[110px]">
                   Ações
                 </th>
               </tr>
@@ -328,13 +328,13 @@ export default function NovaSetorizacao() {
                   }`}
                 >
                   {/* DATA */}
-                  <td className="px-2 py-1 whitespace-nowrap text-xs">
+                  <td className="px-2 py-1 whitespace-nowrap text-sm">
                     {formatDate(i.criado_em)}
                   </td>
 
                   {/* DESCRIÇÃO */}
                   <td
-                    className="px-2 py-1 truncate"
+                    className="px-2 py-1 truncate text-sm"
                     title={i.descricao}
                   >
                     {i.descricao}
@@ -342,15 +342,14 @@ export default function NovaSetorizacao() {
 
                   {/* INPUT ID */}
                   <td
-                    className="px-2 py-1 text-[11px] font-mono text-gray-600
-                              truncate whitespace-nowrap w-[260px]"
+                    className="px-2 py-1 text-sm font-mono text-gray-600 truncate whitespace-nowrap"
                     title={i.input_id}
                   >
                     {shortId(i.input_id)}
                   </td>
 
                   {/* PDVs */}
-                  <td className="px-2 py-1 text-center">
+                  <td className="px-2 py-1 text-sm text-center">
                     {i.total_pdvs}
                   </td>
 
@@ -358,9 +357,9 @@ export default function NovaSetorizacao() {
                   <td className="px-2 py-1 text-center">
                     <button
                       onClick={() => setInputSelecionado(i.input_id)}
-                      className="bg-brand text-white px-2 py-0.5 rounded text-[11px]"
+                      className="bg-brand text-white px-3 py-1 rounded text-xs hover:opacity-90"
                     >
-                      Clusterizar
+                      Setorizar
                     </button>
                   </td>
                 </tr>
@@ -414,28 +413,34 @@ export default function NovaSetorizacao() {
         open={abrirHistorico}
         onToggle={() => setAbrirHistorico((v) => !v)}
       >
-        <table className="w-full text-sm table-fixed">
+        <table className="w-full table-fixed text-sm">
           <thead className="bg-gray-50 border-b">
             <tr>
-              <th className="px-2 py-1 text-left font-semibold w-[130px]">
+              <th className="px-2 py-1 text-left font-semibold text-xs w-[130px]">
                 Data
               </th>
-              <th className="px-2 py-1 text-left font-semibold">
+
+              <th className="px-2 py-1 text-left font-semibold text-xs">
                 Descrição
               </th>
-              <th className="px-2 py-1 text-left font-semibold w-[200px]">
+
+              <th className="px-2 py-1 text-left font-semibold text-xs w-[200px]">
                 Clusterization ID
               </th>
-              <th className="px-2 py-1 text-center font-semibold w-[110px]">
+
+              <th className="px-2 py-1 text-center font-semibold text-xs w-[110px]">
                 Região
               </th>
-              <th className="px-2 py-1 text-center font-semibold w-[80px]">
+
+              <th className="px-2 py-1 text-center font-semibold text-xs w-[80px]">
                 Clusters
               </th>
-              <th className="px-2 py-1 text-center font-semibold w-[80px]">
+
+              <th className="px-2 py-1 text-center font-semibold text-xs w-[80px]">
                 PDVs
               </th>
-              <th className="px-2 py-1 text-center font-semibold w-[90px]">
+
+              <th className="px-2 py-1 text-center font-semibold text-xs w-[90px]">
                 Status
               </th>
             </tr>
@@ -450,7 +455,7 @@ export default function NovaSetorizacao() {
                 }`}
               >
                 {/* DATA */}
-                <td className="px-2 py-1 whitespace-nowrap text-xs">
+                <td className="px-2 py-1 whitespace-nowrap text-sm">
                   {formatDate(c.criado_em)}
                 </td>
 
@@ -464,8 +469,7 @@ export default function NovaSetorizacao() {
 
                 {/* CLUSTERIZATION ID */}
                 <td
-                  className="px-2 py-1 text-[11px] font-mono text-gray-600
-                            truncate whitespace-nowrap"
+                  className="px-2 py-1 text-sm font-mono text-gray-600 truncate whitespace-nowrap"
                   title={c.clusterization_id}
                 >
                   {shortId(c.clusterization_id)}
@@ -477,7 +481,7 @@ export default function NovaSetorizacao() {
                 </td>
 
                 {/* CLUSTERS */}
-                <td className="px-2 py-1 text-center font-semibold text-sm">
+                <td className="px-2 py-1 text-center text-sm">
                   {c.qtd_clusters ?? "-"}
                 </td>
 
@@ -506,6 +510,7 @@ export default function NovaSetorizacao() {
           </tbody>
         </table>
       </CollapsibleSection>
+
 
 
       {/* DRAWERS */}
