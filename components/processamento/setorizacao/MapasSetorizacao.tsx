@@ -93,7 +93,11 @@ export default function MapasSetorizacao() {
 
     setClusterizacoes(r.clusterizacoes || []);
     setTotal(r.total || 0);
+
+    return r.clusterizacoes || []; // 🔥 ESSENCIAL
   }
+
+
 
   useEffect(() => {
     carregar();
@@ -130,20 +134,44 @@ export default function MapasSetorizacao() {
       await gerarMapa(clusterization_id);
 
       toast.success(
-        "Mapa em geração. Pode levar alguns segundos.",
+        "Mapa em geração. Aguardando conclusão...",
         { id: toastId }
       );
+
+      // 🔁 polling de status
+      let tentativas = 0;
+      const maxTentativas = 10; // ~30s
+
+      const interval = setInterval(async () => {
+        tentativas++;
+
+        const lista = await carregar(); // 🔥 DADO ATUAL
+        const c = lista.find(
+          (x: any) => x.clusterization_id === clusterization_id
+        );
+
+        if (c?.status === "done" || c?.status === "success") {
+          clearInterval(interval);
+          toast.success("Mapa gerado com sucesso.");
+          setGerandoMapaId(null);
+        }
+
+        if (tentativas >= maxTentativas) {
+          clearInterval(interval);
+          toast("Mapa ainda em processamento.", { icon: "⏳" });
+          setGerandoMapaId(null);
+        }
+      }, 3000);
+
+
     } catch (e: any) {
       toast.error(
         e?.response?.data?.detail || "Erro ao gerar mapa.",
         { id: toastId }
       );
-    } finally {
       setGerandoMapaId(null);
     }
   }
-
- 
 
   async function abrirMapa(clusterization_id: string) {
     const base = process.env.NEXT_PUBLIC_API_URL;
@@ -159,7 +187,8 @@ export default function MapasSetorizacao() {
     const toastId = toast.loading("Verificando mapa...");
 
     try {
-      const res = await fetch(url, { method: "HEAD" });
+      const res = await fetch(url, { method: "GET" });
+
 
       if (!res.ok) {
         throw new Error("not_found");
