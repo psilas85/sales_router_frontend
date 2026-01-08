@@ -3,6 +3,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import {
   listarHistoricoClusterizacoes,
   exportarResumo,
@@ -89,6 +90,8 @@ export default function RelatoriosSetorizacao() {
   const [total, setTotal] = useState(0);
   const [pagina, setPagina] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [exportandoId, setExportandoId] = useState<string | null>(null);
+
 
   // filtros
   const [dataInicio, setDataInicio] = useState("");
@@ -254,42 +257,69 @@ export default function RelatoriosSetorizacao() {
                   <td className="px-2">
                     <div className="flex gap-2">
                       <button
+                        disabled={exportandoId === c.clusterization_id}
                         onClick={async () => {
-                          const r = await exportarResumo(
-                            c.clusterization_id
-                          );
-                          if (r?.arquivo) {
-                            const base =
-                              process.env.NEXT_PUBLIC_API_URL;
-                            window.open(
-                              `${base}/${r.arquivo}`,
-                              "_blank"
-                            );
+                          if (exportandoId) return;
+
+                          setExportandoId(c.clusterization_id);
+                          const toastId = toast.loading("Gerando resumo...");
+
+                          try {
+                            const r = await exportarResumo(c.clusterization_id);
+
+                            if (!r?.arquivo) throw new Error();
+
+                            const base = process.env.NEXT_PUBLIC_API_URL;
+                            window.open(`${base}/${r.arquivo}`, "_blank");
+
+                            toast.success("Resumo gerado com sucesso.", { id: toastId });
+                          } catch {
+                            toast.error("Erro ao gerar resumo.", { id: toastId });
+                          } finally {
+                            setExportandoId(null);
                           }
                         }}
-                        className="px-2 py-1 bg-blue-600 text-white rounded-md text-xs"
+                        className={`px-2 py-1 rounded-md text-xs text-white ${
+                          exportandoId === c.clusterization_id
+                            ? "bg-gray-400 cursor-not-allowed"
+                            : "bg-blue-600 hover:opacity-95"
+                        }`}
                       >
-                        Resumo
+                        {exportandoId === c.clusterization_id ? "Gerando..." : "Resumo"}
                       </button>
 
                       <button
+                        disabled={exportandoId === c.clusterization_id}
                         onClick={async () => {
-                          const r = await exportarDetalhado(
-                            c.clusterization_id
-                          );
-                          if (r?.arquivo) {
-                            const base =
-                              process.env.NEXT_PUBLIC_API_URL;
-                            window.open(
-                              `${base}/${r.arquivo}`,
-                              "_blank"
-                            );
+                          if (exportandoId) return;
+
+                          setExportandoId(c.clusterization_id);
+                          const toastId = toast.loading("Gerando relatório de PDVs...");
+
+                          try {
+                            const r = await exportarDetalhado(c.clusterization_id);
+
+                            if (!r?.arquivo) throw new Error();
+
+                            const base = process.env.NEXT_PUBLIC_API_URL;
+                            window.open(`${base}/${r.arquivo}`, "_blank");
+
+                            toast.success("Relatório de PDVs gerado com sucesso.", { id: toastId });
+                          } catch {
+                            toast.error("Erro ao gerar relatório de PDVs.", { id: toastId });
+                          } finally {
+                            setExportandoId(null);
                           }
                         }}
-                        className="px-2 py-1 bg-brand text-white rounded-md text-xs"
+                        className={`px-2 py-1 rounded-md text-xs text-white ${
+                          exportandoId === c.clusterization_id
+                            ? "bg-gray-400 cursor-not-allowed"
+                            : "bg-brand hover:opacity-95"
+                        }`}
                       >
-                        PDVs
+                        {exportandoId === c.clusterization_id ? "Gerando..." : "PDVs"}
                       </button>
+
                     </div>
                   </td>
                 </tr>
