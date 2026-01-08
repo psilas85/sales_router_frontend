@@ -8,6 +8,7 @@ import {
   gerarMapaRoteirizacao,
 } from "@/services/routing";
 import { useAuthStore } from "@/store/useAuthStore";
+import toast from "react-hot-toast";
 
 // ===============================
 // Utils
@@ -40,6 +41,8 @@ export default function MapasRoteirizacao() {
   const [dataInicio, setDataInicio] = useState("");
   const [dataFim, setDataFim] = useState("");
   const [descricaoFiltro, setDescricaoFiltro] = useState("");
+
+  const [gerandoMapaId, setGerandoMapaId] = useState<string | null>(null);
 
   // ===============================
   // Load inicial
@@ -102,19 +105,36 @@ export default function MapasRoteirizacao() {
   // Ações
   // ===============================
   async function handleGerarMapa(routingId: string) {
-    await gerarMapaRoteirizacao(routingId);
-    alert("Mapa gerado com sucesso");
+    if (gerandoMapaId === routingId) return;
+
+    setGerandoMapaId(routingId);
+    const toastId = toast.loading("Gerando mapa...");
+
+    try {
+      await gerarMapaRoteirizacao(routingId);
+
+      toast.success("Mapa gerado com sucesso.", { id: toastId });
+    } catch {
+      toast.error("Erro ao gerar mapa.", { id: toastId });
+    } finally {
+      setGerandoMapaId(null);
+    }
   }
+
 
   function abrirMapa(routingId: string) {
-    if (!tenantId) return;
+    if (!tenantId) {
+      toast.error("Tenant não identificado. Faça login novamente.");
+      return;
+    }
 
     const base = process.env.NEXT_PUBLIC_API_URL;
-    window.open(
-      `${base}/output/maps/${tenantId}/routing_${routingId}.html`,
-      "_blank"
-    );
+    const url = `${base}/output/maps/${tenantId}/routing_${routingId}.html`;
+
+    toast("Abrindo mapa...", { icon: "🗺️" });
+    window.open(url, "_blank");
   }
+
 
   // ===============================
   // Render
@@ -232,10 +252,15 @@ export default function MapasRoteirizacao() {
                   <td className="px-2 text-center whitespace-nowrap">
                     <div className="flex gap-2 justify-center">
                       <button
+                        disabled={gerandoMapaId === r.routing_id}
                         onClick={() => handleGerarMapa(r.routing_id)}
-                        className="px-3 py-1 rounded-md text-xs bg-blue-600 text-white hover:opacity-95"
+                        className={`px-3 py-1 rounded-md text-xs text-white ${
+                          gerandoMapaId === r.routing_id
+                            ? "bg-gray-400 cursor-not-allowed"
+                            : "bg-blue-600 hover:opacity-95"
+                        }`}
                       >
-                        Gerar mapa
+                        {gerandoMapaId === r.routing_id ? "Gerando..." : "Gerar mapa"}
                       </button>
 
                       <button
@@ -244,6 +269,7 @@ export default function MapasRoteirizacao() {
                       >
                         Abrir mapa
                       </button>
+
                     </div>
                   </td>
                 </tr>
