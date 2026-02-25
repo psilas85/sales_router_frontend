@@ -222,3 +222,16 @@ export async function detalharJob(job_id: string) {
 export function abrirMapaNavegador(url: string) {
   window.open(url, "_blank");
 }
+
+// ============================================================
+// INPUTS — LISTAGEM E EXCLUSÃO
+// ============================================================
+
+export async function listarInputs() {
+  const res = await api.get("/pdv/jobs");
+  return res.data;
+}
+
+export async function excluirInput(input_id: string) {
+  return api.delete(`/pdv/processamentos/${input_id}`);
+}

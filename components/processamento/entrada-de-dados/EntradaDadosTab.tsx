@@ -6,8 +6,9 @@ import { useState } from "react";
 import EntradaTab from "./EntradaTab";
 import MapaTab from "./MapaTab";
 import LocaisTab from "./LocaisTab";
+import InputsTab from "./InputsTab";
 
-type Aba = "upload" | "mapa" | "locais";
+type Aba = "upload" | "mapa" | "locais" | "inputs";
 
 export default function EntradaDadosTab() {
   const [aba, setAba] = useState<Aba>("upload");
@@ -30,6 +31,7 @@ export default function EntradaDadosTab() {
           { key: "upload", label: "Upload" },
           { key: "mapa", label: "Mapa" },
           { key: "locais", label: "Locais" },
+          { key: "inputs", label: "Inputs" },
         ].map((t) => (
           <button
             key={t.key}
@@ -50,6 +52,7 @@ export default function EntradaDadosTab() {
         {aba === "upload" && <EntradaTab />}
         {aba === "mapa" && <MapaTab />}
         {aba === "locais" && <LocaisTab />}
+        {aba === "inputs" && <InputsTab />}
       </div>
     </div>
   );
