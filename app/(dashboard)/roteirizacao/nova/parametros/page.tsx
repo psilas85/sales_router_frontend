@@ -43,7 +43,10 @@ export default function ParametrosRoteirizacaoPage() {
   const [diasUteis, setDiasUteis] = useState(1);
   const [freq, setFreq] = useState(1);
   const [serviceMin, setServiceMin] = useState(5);
-  const [velMedia, setVelMedia] = useState(30);
+
+  const [minPdvs, setMinPdvs] = useState(8);
+  const [maxPdvs, setMaxPdvs] = useState(12);
+  
 
   // UI only (não enviados)
   const [maxKm, setMaxKm] = useState(250);
@@ -83,10 +86,10 @@ export default function ParametrosRoteirizacaoPage() {
         cidade,
         dias_uteis: diasUteis,
         frequencia_visita: freq,
+        min_pdvs_rota: minPdvs,
+        max_pdvs_rota: maxPdvs,
         service_min: serviceMin,
-        vel_kmh: velMedia,
       });
-
 
       // **É obrigatório que o backend retorne: { job_id }**
       if (!resp.job_id) {
@@ -205,16 +208,27 @@ export default function ParametrosRoteirizacaoPage() {
             />
           </div>
 
-          {/* Velocidade */}
           <div>
-            <label className="font-medium">Velocidade Média (km/h)</label>
+            <label className="font-medium">PDVs mínimos por rota</label>
             <input
               type="number"
-              value={velMedia}
-              onChange={(e) => setVelMedia(parseFloat(e.target.value))}
+              value={minPdvs}
+              onChange={(e) => setMinPdvs(parseInt(e.target.value))}
               className="border p-3 rounded-lg w-full mt-1"
             />
           </div>
+
+          <div>
+            <label className="font-medium">PDVs máximos por rota</label>
+            <input
+              type="number"
+              value={maxPdvs}
+              onChange={(e) => setMaxPdvs(parseInt(e.target.value))}
+              className="border p-3 rounded-lg w-full mt-1"
+            />
+          </div>
+
+      
 
           {/* UI only */}
           <div>
