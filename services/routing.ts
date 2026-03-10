@@ -13,14 +13,15 @@ export async function iniciarRoteirizacao(payload: {
   cidade: string | null;
   dias_uteis: number;
   frequencia_visita: number;
+  min_pdvs_rota: number;
+  max_pdvs_rota: number;
   service_min: number;
-  vel_kmh: number;
 }) {
   const res = await api.post("/routing/roteirizar", payload, {
     headers: { "Content-Type": "application/json" },
   });
 
-  return res.data; // { job_id }
+  return res.data;
 }
 
 // ============================================================
