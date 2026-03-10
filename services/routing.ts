@@ -16,6 +16,7 @@ export async function iniciarRoteirizacao(payload: {
   min_pdvs_rota: number;
   max_pdvs_rota: number;
   service_min: number;
+  vel_kmh?: number;
 }) {
   const res = await api.post("/routing/roteirizar", payload, {
     headers: { "Content-Type": "application/json" },

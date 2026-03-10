@@ -1,4 +1,4 @@
-//sales_router_frontend/components/processamento/roteirizacao/ProgressoRoteirizacao.tsx
+//sales_router_frontend/components/processamento/roteirizacao/ParametrosRoteirizacao.tsx
 
 "use client";
 
@@ -71,6 +71,7 @@ export default function ParametrosRoteirizacao({
       min_pdvs_rota: minPdvs,
       max_pdvs_rota: maxPdvs,
       service_min: serviceMin,
+      vel_kmh: 35
     };
 
     try {
