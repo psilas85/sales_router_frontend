@@ -5,7 +5,10 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Title from "@/components/Title";
-import { buscarConsultor, atualizarConsultor } from "@/services/consultores";
+import {
+  buscarConsultor,
+  atualizarConsultor,
+} from "@/services/consultores";
 
 export default function EditarConsultorPage() {
 
@@ -14,33 +17,36 @@ export default function EditarConsultorPage() {
   const id = params.id as string;
 
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
   const [form, setForm] = useState({
     consultor: "",
     cpf: "",
     setor: "",
+    cep: "",
     logradouro: "",
     numero: "",
     bairro: "",
     cidade: "",
     uf: "",
-    cep: "",
   });
 
   async function carregar() {
+
     try {
+
       const data = await buscarConsultor(id);
 
       setForm({
         consultor: data.consultor || "",
         cpf: data.cpf || "",
         setor: data.setor || "",
+        cep: data.cep || "",
         logradouro: data.logradouro || "",
         numero: data.numero || "",
         bairro: data.bairro || "",
         cidade: data.cidade || "",
         uf: data.uf || "",
-        cep: data.cep || "",
       });
 
     } catch (err) {
@@ -55,6 +61,7 @@ export default function EditarConsultorPage() {
   }, []);
 
   function handleChange(e: any) {
+
     setForm({
       ...form,
       [e.target.name]: e.target.value,
@@ -63,15 +70,32 @@ export default function EditarConsultorPage() {
 
   async function salvar() {
 
-    await atualizarConsultor(id, form);
+    try {
 
-    router.push("/cadastros");
+      setSaving(true);
+
+      await atualizarConsultor(id, form);
+
+      alert("Consultor atualizado com sucesso");
+
+      router.push("/cadastros/consultores");
+
+    } catch (err) {
+
+      console.error("Erro ao salvar", err);
+      alert("Erro ao salvar consultor");
+
+    } finally {
+
+      setSaving(false);
+    }
   }
 
   if (loading) {
+
     return (
       <div className="p-8 text-sm text-gray-500">
-        Carregando...
+        Carregando consultor...
       </div>
     );
   }
@@ -79,15 +103,22 @@ export default function EditarConsultorPage() {
   return (
     <div className="p-8 space-y-6 max-w-xl">
 
+      <button
+        onClick={() => router.back()}
+        className="text-sm text-gray-500 hover:underline"
+      >
+        ← Voltar
+      </button>
+
       <Title>Editar consultor</Title>
 
-      <div className="space-y-4">
+      <div className="bg-white rounded-xl border p-6 space-y-4">
 
         <input
           name="consultor"
           value={form.consultor}
           onChange={handleChange}
-          placeholder="Nome"
+          placeholder="Nome do consultor"
           className="w-full border rounded-lg p-2 text-sm"
         />
 
@@ -160,13 +191,14 @@ export default function EditarConsultorPage() {
 
         <button
           onClick={salvar}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700"
+          disabled={saving}
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 disabled:opacity-50"
         >
-          Salvar
+          {saving ? "Salvando..." : "Salvar"}
         </button>
 
         <button
-          onClick={() => router.push("/cadastros")}
+          onClick={() => router.push("/cadastros/consultores")}
           className="border px-4 py-2 rounded-lg text-sm"
         >
           Cancelar
