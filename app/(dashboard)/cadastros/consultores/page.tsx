@@ -5,6 +5,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   listarConsultores,
   deletarConsultor,
@@ -18,6 +19,8 @@ function formatCPF(cpf: string) {
 }
 
 export default function ConsultoresPage() {
+
+  const router = useRouter();
 
   const [consultores, setConsultores] = useState<any[]>([]);
   const [filtro, setFiltro] = useState("");
@@ -157,10 +160,7 @@ export default function ConsultoresPage() {
 
                   <button
                     className="text-blue-600 hover:underline"
-                    onClick={() =>
-                      window.location.href =
-                        `/cadastros/consultores/${c.id}`
-                    }
+                    onClick={() => router.push(`/cadastros/consultores/${c.id}`)}
                   >
                     Editar
                   </button>
