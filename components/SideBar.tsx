@@ -4,8 +4,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Layers3, Clock, Menu } from "lucide-react";
+import { Home, Layers3, Clock, Menu, Users } from "lucide-react";
 import { useLayoutStore } from "@/store/useLayoutStore";
+
 
 export default function SideBar() {
   const pathname = usePathname();
@@ -65,6 +66,14 @@ export default function SideBar() {
           label="Histórico"
           icon={<Clock size={20} />}
           active={isActive("/historico")}
+          collapsed={sidebarCollapsed}
+        />
+
+        <MenuItem
+          href="/cadastros/consultores"
+          label="Consultores"
+          icon={<Users size={20} />}
+          active={isActive("/cadastros/consultores")}
           collapsed={sidebarCollapsed}
         />
       </nav>

@@ -1,3 +1,5 @@
+//sales_router_frontend/services/locais.ts
+
 import api from "./api";
 
 export async function listarLocais(input_id: string) {
