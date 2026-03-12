@@ -55,7 +55,7 @@ export default function ConsultoresPage() {
   }
 
   const filtrados = consultores.filter((c) =>
-    c.consultor?.toLowerCase().includes(filtro.toLowerCase())
+    (c.consultor || "").toLowerCase().includes(filtro.toLowerCase())
   );
 
   return (
@@ -73,9 +73,7 @@ export default function ConsultoresPage() {
 
         <button
           className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700"
-          onClick={() =>
-            window.location.href = "/cadastros/consultores/novo"
-          }
+          onClick={() => router.push("/cadastros/consultores/novo")}
         >
           Novo consultor
         </button>
