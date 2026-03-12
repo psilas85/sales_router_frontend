@@ -4,7 +4,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Layers3, Clock, Menu, Users } from "lucide-react";
+import { Home, Layers3, Clock, Menu, Users, Folder } from "lucide-react";
 import { useLayoutStore } from "@/store/useLayoutStore";
 
 
@@ -69,13 +69,24 @@ export default function SideBar() {
           collapsed={sidebarCollapsed}
         />
 
-        <MenuItem
-          href="/cadastros/consultores"
-          label="Consultores"
-          icon={<Users size={20} />}
-          active={isActive("/cadastros/consultores")}
-          collapsed={sidebarCollapsed}
-        />
+        {/* CADASTROS */}
+        <div className="pt-3">
+
+          {!sidebarCollapsed && (
+            <div className="px-3 text-xs text-gray-400 uppercase mb-2">
+              Cadastros
+            </div>
+          )}
+
+          <MenuItem
+            href="/cadastros/consultores"
+            label="Consultores"
+            icon={<Users size={20} />}
+            active={isActive("/cadastros/consultores")}
+            collapsed={sidebarCollapsed}
+          />
+
+      </div>
       </nav>
     </aside>
   );

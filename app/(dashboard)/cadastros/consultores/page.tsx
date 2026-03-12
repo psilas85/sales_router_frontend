@@ -10,14 +10,24 @@ import {
 import Title from "@/components/Title";
 
 export default function ConsultoresPage() {
+
   const [consultores, setConsultores] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   async function carregar() {
-    setLoading(true);
-    const data = await listarConsultores();
-    setConsultores(data);
-    setLoading(false);
+    try {
+
+      const data = await listarConsultores();
+
+      console.log("CONSULTORES:", data);
+
+      setConsultores(data);
+
+    } catch (err) {
+      console.error("Erro ao carregar consultores", err);
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {
@@ -25,8 +35,11 @@ export default function ConsultoresPage() {
   }, []);
 
   async function excluir(id: string) {
+
     if (!confirm("Deseja excluir este consultor?")) return;
+
     await deletarConsultor(id);
+
     carregar();
   }
 
@@ -41,7 +54,23 @@ export default function ConsultoresPage() {
       </div>
 
       <div className="bg-white rounded-2xl border shadow-sm overflow-hidden">
+
+        {loading && (
+          <div className="p-6 text-sm text-gray-500">
+            Carregando...
+          </div>
+        )}
+
+        {!loading && consultores.length === 0 && (
+          <div className="p-6 text-sm text-gray-500">
+            Nenhum consultor cadastrado
+          </div>
+        )}
+
+        {!loading && consultores.length > 0 && (
+
         <table className="w-full text-sm">
+
           <thead className="bg-gray-50 text-gray-600">
             <tr>
               <th className="p-3 text-left">Nome</th>
@@ -53,6 +82,7 @@ export default function ConsultoresPage() {
           </thead>
 
           <tbody>
+
             {consultores.map((c) => (
               <tr key={c.id} className="border-t">
 
@@ -81,17 +111,18 @@ export default function ConsultoresPage() {
                   </button>
 
                 </td>
+
               </tr>
             ))}
+
           </tbody>
+
         </table>
 
-        {loading && (
-          <div className="p-4 text-sm text-gray-500">
-            Carregando…
-          </div>
         )}
+
       </div>
+
     </div>
   );
 }
