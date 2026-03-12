@@ -6,11 +6,16 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, Layers3, Clock, Menu, Users, Folder } from "lucide-react";
 import { useLayoutStore } from "@/store/useLayoutStore";
-
+import { useState } from "react";
 
 export default function SideBar() {
+
   const pathname = usePathname();
   const { sidebarCollapsed, toggleSidebar } = useLayoutStore();
+
+  const [cadastrosOpen, setCadastrosOpen] = useState(
+    pathname.startsWith("/cadastros")
+  );
 
   function isActive(path: string) {
     return pathname.startsWith(path);
@@ -27,7 +32,7 @@ export default function SideBar() {
         shadow-sm
         transition-all
         duration-300
-        ${sidebarCollapsed ? "w-16" : "w-52 "}
+        ${sidebarCollapsed ? "w-16" : "w-52"}
         h-[calc(100vh-3rem)]
         flex
         flex-col
@@ -43,8 +48,9 @@ export default function SideBar() {
         </button>
       </div>
 
-      {/* MENUS */}
+      {/* MENU */}
       <nav className="flex-1 px-3 py-4 space-y-2">
+
         <MenuItem
           href="/home"
           label="Home"
@@ -70,23 +76,55 @@ export default function SideBar() {
         />
 
         {/* CADASTROS */}
-        <div className="pt-3">
+        <div>
 
-          {!sidebarCollapsed && (
-            <div className="px-3 text-xs text-gray-400 uppercase mb-2">
-              Cadastros
+          <button
+            onClick={() => setCadastrosOpen(!cadastrosOpen)}
+            className={`
+              w-full
+              flex
+              items-center
+              gap-3
+              px-3
+              py-2
+              rounded-lg
+              text-sm
+              transition
+              ${
+                isActive("/cadastros")
+                  ? "bg-brand.soft text-brand.secondary font-semibold"
+                  : "text-gray-700 hover:bg-neutral-soft"
+              }
+            `}
+          >
+            <Folder size={20} />
+            {!sidebarCollapsed && (
+              <>
+                <span className="flex-1 text-left">Cadastros</span>
+                <span className="text-xs">
+                  {cadastrosOpen ? "▾" : "▸"}
+                </span>
+              </>
+            )}
+          </button>
+
+          {/* SUBMENU */}
+          {cadastrosOpen && !sidebarCollapsed && (
+            <div className="ml-7 mt-1 space-y-1">
+
+              <MenuItem
+                href="/cadastros/consultores"
+                label="Consultores"
+                icon={<Users size={18} />}
+                active={isActive("/cadastros/consultores")}
+                collapsed={false}
+              />
+
             </div>
           )}
 
-          <MenuItem
-            href="/cadastros/consultores"
-            label="Consultores"
-            icon={<Users size={20} />}
-            active={isActive("/cadastros/consultores")}
-            collapsed={sidebarCollapsed}
-          />
+        </div>
 
-      </div>
       </nav>
     </aside>
   );
