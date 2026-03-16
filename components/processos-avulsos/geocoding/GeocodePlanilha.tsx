@@ -4,12 +4,23 @@
 
 import { useState } from "react"
 import { uploadGeocode, jobStatus, downloadGeocode } from "@/services/geocoding"
+import GeocodeResultMap from "@/components/maps/GeocodeResultMap"
+import api from "@/services/api"
 
 export default function GeocodePlanilha() {
 
   const [file, setFile] = useState<File | null>(null)
   const [job, setJob] = useState<any>(null)
   const [loading, setLoading] = useState(false)
+  const [pontosMapa, setPontosMapa] = useState<any[]>([])
+
+  function sampleRandom(array: any[], n: number) {
+
+    const shuffled = [...array].sort(() => 0.5 - Math.random())
+
+    return shuffled.slice(0, n)
+
+  }
 
   async function enviar() {
 
@@ -44,9 +55,25 @@ export default function GeocodePlanilha() {
           step: "Concluído"
         })
 
+        try {
+
+          const res = await api.get(`/geocode/api/v1/job/${job_id}/result`)
+
+          const sample = sampleRandom(res.data, 1000)
+
+          setPontosMapa(sample)
+
+        } catch (err) {
+
+          console.error("Erro ao carregar pontos para mapa", err)
+
+        }
+
         setLoading(false)
         clearInterval(interval)
+
         return
+
       }
 
       setJob(status)
@@ -60,6 +87,7 @@ export default function GeocodePlanilha() {
     <div className="space-y-6">
 
       {/* HEADER */}
+
       <div>
 
         <h3 className="text-lg font-semibold">
@@ -72,7 +100,9 @@ export default function GeocodePlanilha() {
 
       </div>
 
+
       {/* UPLOAD */}
+
       <div className="flex gap-3 items-center">
 
         <input
@@ -92,7 +122,9 @@ export default function GeocodePlanilha() {
 
       </div>
 
+
       {/* STATUS */}
+
       {job && (
 
         <div className="border rounded p-4 space-y-3 bg-gray-50">
@@ -105,7 +137,9 @@ export default function GeocodePlanilha() {
             <b>Etapa:</b> {job.step ?? "-"}
           </div>
 
+
           {/* PROGRESS BAR */}
+
           <div className="w-full bg-gray-200 rounded h-3">
 
             <div
@@ -119,6 +153,9 @@ export default function GeocodePlanilha() {
             <b>Progresso:</b> {job.progress ?? 0}%
           </div>
 
+
+          {/* DOWNLOAD */}
+
           {job.status === "finished" && (
 
             <button
@@ -129,6 +166,27 @@ export default function GeocodePlanilha() {
             </button>
 
           )}
+
+        </div>
+
+      )}
+
+
+      {/* MAPA */}
+
+      {job?.status === "finished" && pontosMapa.length > 0 && (
+
+        <div className="mt-8 space-y-2">
+
+          <h4 className="font-semibold">
+            Visualização geográfica
+          </h4>
+
+          <p className="text-xs text-gray-500">
+            Exibindo {pontosMapa.length} pontos aleatórios do resultado
+          </p>
+
+          <GeocodeResultMap pontos={pontosMapa} />
 
         </div>
 

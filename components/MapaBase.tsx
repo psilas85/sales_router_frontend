@@ -1,3 +1,5 @@
+//sales_router_frontend/components/MapaBase.tsx
+
 "use client";
 
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
