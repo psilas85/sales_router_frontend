@@ -12,26 +12,32 @@ const GeocodeResultMap = dynamic(
   { ssr: false }
 )
 
+type Resumo = {
+  total?: number
+  sucesso?: number
+  falhas?: number
+}
+
 export default function GeocodePlanilha() {
 
   const [file, setFile] = useState<File | null>(null)
   const [job, setJob] = useState<any>(null)
   const [loading, setLoading] = useState(false)
 
+  const [resumo, setResumo] = useState<Resumo | null>(null)
+
   const [pontosMapa, setPontosMapa] = useState<any[]>([])
   const [mapLoaded, setMapLoaded] = useState(false)
 
   function sampleRandom(array: any[], n: number) {
 
+    if (array.length <= n) return array
+
     const result: any[] = []
-
-    const len = array.length
-
-    if (len <= n) return array
 
     for (let i = 0; i < n; i++) {
 
-      const index = Math.floor(Math.random() * len)
+      const index = Math.floor(Math.random() * array.length)
 
       result.push(array[index])
 
@@ -73,6 +79,16 @@ export default function GeocodePlanilha() {
           progress: 100,
           step: "Concluído"
         })
+
+        if (status.result) {
+
+          setResumo({
+            total: status.result.total,
+            sucesso: status.result.sucesso,
+            falhas: status.result.falhas
+          })
+
+        }
 
         setLoading(false)
 
@@ -153,54 +169,87 @@ export default function GeocodePlanilha() {
 
       {job && (
 
-        <div className="border rounded p-4 space-y-3 bg-gray-50">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 space-y-4 max-w-3xl">
 
-          <div className="text-sm">
-            <b>Status:</b> {job.status}
-          </div>
+          <div className="flex items-center justify-between">
 
-          <div className="text-sm">
-            <b>Etapa:</b> {job.step ?? "-"}
+            <span className="text-sm font-medium text-gray-700">
+              Status: {job.status}
+            </span>
+
+            <span className="text-xs text-gray-500">
+              {job.step ?? "-"}
+            </span>
+
           </div>
 
           {/* PROGRESS BAR */}
 
-          <div className="w-full bg-gray-200 rounded h-3">
+          <div className="w-full bg-gray-200 rounded-full h-3">
 
             <div
-              className="bg-blue-600 h-3 rounded transition-all"
+              className="bg-blue-600 h-3 rounded-full transition-all"
               style={{ width: `${job.progress ?? 0}%` }}
             />
 
           </div>
 
-          <div className="text-sm">
-            <b>Progresso:</b> {job.progress ?? 0}%
+          <div className="text-xs text-gray-500">
+            {job.progress ?? 0}% concluído
           </div>
 
-          {/* DOWNLOAD */}
+          {/* RESUMO */}
 
-          {job.status === "finished" && (
+          {resumo && (
 
-            <button
-              onClick={() => downloadGeocode(job.job_id)}
-              className="mt-2 bg-green-600 text-white px-4 py-2 rounded"
-            >
-              Baixar resultado
-            </button>
+            <div className="grid grid-cols-3 gap-3 pt-2">
+
+              <ResumoBox
+                label="Total"
+                value={resumo.total ?? 0}
+              />
+
+              <ResumoBox
+                label="Geocodificados"
+                value={resumo.sucesso ?? 0}
+                green
+              />
+
+              <ResumoBox
+                label="Inválidos"
+                value={resumo.falhas ?? 0}
+                red
+              />
+
+            </div>
 
           )}
 
-          {/* GERAR MAPA */}
+          {/* AÇÕES */}
 
-          {job.status === "finished" && !mapLoaded && (
+          {job.status === "finished" && (
 
-            <button
-              onClick={gerarMapa}
-              className="mt-2 ml-2 bg-purple-600 text-white px-4 py-2 rounded"
-            >
-              Gerar mapa
-            </button>
+            <div className="flex gap-3 pt-2">
+
+              <button
+                onClick={() => downloadGeocode(job.job_id)}
+                className="px-4 py-2 bg-green-600 text-white rounded-md text-sm"
+              >
+                Baixar resultado
+              </button>
+
+              {!mapLoaded && (
+
+                <button
+                  onClick={gerarMapa}
+                  className="px-4 py-2 bg-purple-600 text-white rounded-md text-sm"
+                >
+                  Gerar mapa
+                </button>
+
+              )}
+
+            </div>
 
           )}
 
@@ -227,6 +276,43 @@ export default function GeocodePlanilha() {
         </div>
 
       )}
+
+    </div>
+
+  )
+
+}
+
+function ResumoBox({
+  label,
+  value,
+  green,
+  red
+}: {
+  label: string
+  value: number
+  green?: boolean
+  red?: boolean
+}) {
+
+  const color =
+    green
+      ? "border-green-200 bg-green-50 text-green-700"
+      : red
+      ? "border-red-200 bg-red-50 text-red-700"
+      : "border-gray-200"
+
+  return (
+
+    <div className={`rounded-lg border px-4 py-3 text-center ${color}`}>
+
+      <p className="text-xs">
+        {label}
+      </p>
+
+      <p className="text-lg font-semibold">
+        {value}
+      </p>
 
     </div>
 
