@@ -38,9 +38,9 @@ export async function jobStatus(job_id:string){
 
 export function downloadGeocode(job_id:string){
 
-  window.open(
-    `/geocode/api/v1/job/${job_id}/download`,
-    "_blank"
-  )
+  const url =
+    `${process.env.NEXT_PUBLIC_API_URL}/geocode/api/v1/job/${job_id}/download`
+
+  window.open(url, "_blank")
 
 }
