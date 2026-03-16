@@ -2,10 +2,17 @@
 
 "use client"
 
+"use client"
+
 import { useState } from "react"
 import { uploadGeocode, jobStatus, downloadGeocode } from "@/services/geocoding"
-import GeocodeResultMap from "@/components/maps/GeocodeResultMap"
 import api from "@/services/api"
+import dynamic from "next/dynamic"
+
+const GeocodeResultMap = dynamic(
+  () => import("@/components/maps/GeocodeResultMap"),
+  { ssr: false }
+)
 
 export default function GeocodePlanilha() {
 
@@ -13,7 +20,7 @@ export default function GeocodePlanilha() {
   const [job, setJob] = useState<any>(null)
   const [loading, setLoading] = useState(false)
   const [pontosMapa, setPontosMapa] = useState<any[]>([])
-
+  
   function sampleRandom(array: any[], n: number) {
 
     const shuffled = [...array].sort(() => 0.5 - Math.random())
