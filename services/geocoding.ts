@@ -36,11 +36,26 @@ export async function jobStatus(job_id:string){
 }
 
 
-export function downloadGeocode(job_id:string){
+export async function downloadGeocode(job_id: string) {
 
-  const url =
-    `${process.env.NEXT_PUBLIC_API_URL}/geocode/api/v1/job/${job_id}/download`
+  const res = await api.get(
+    `/geocode/api/v1/job/${job_id}/download`,
+    {
+      responseType: "blob"
+    }
+  )
 
-  window.open(url, "_blank")
+  const url = window.URL.createObjectURL(new Blob([res.data]))
+
+  const link = document.createElement("a")
+
+  link.href = url
+  link.setAttribute("download", "geocode_result.xlsx")
+
+  document.body.appendChild(link)
+
+  link.click()
+
+  link.remove()
 
 }
