@@ -2,15 +2,17 @@
 
 import api from "./api"
 
-export async function geocodeEndereco(data:any) {
+export async function geocodeEndereco(data:any){
 
-  const res = await api.post("/geocode/api/v1/geocode", data)
+  const res = await api.post(
+    "/geocode/api/v1/geocode",
+    data
+  )
 
   return res.data
 }
 
-
-export async function uploadGeocode(file:File) {
+export async function uploadGeocode(file:File){
 
   const form = new FormData()
 
@@ -20,28 +22,30 @@ export async function uploadGeocode(file:File) {
     "/geocode/api/v1/upload",
     form,
     {
-      headers:{ "Content-Type":"multipart/form-data" }
+      headers:{
+        "Content-Type":"multipart/form-data"
+      }
     }
   )
 
   return res.data
 }
 
-
 export async function jobStatus(job_id:string){
 
-  const res = await api.get(`/geocode/api/v1/job/${job_id}`)
+  const res = await api.get(
+    `/geocode/api/v1/job/${job_id}`
+  )
 
   return res.data
 }
 
-
-export async function downloadGeocode(job_id: string) {
+export async function downloadGeocode(job_id:string){
 
   const res = await api.get(
     `/geocode/api/v1/job/${job_id}/download`,
     {
-      responseType: "blob"
+      responseType:"blob"
     }
   )
 
@@ -50,7 +54,8 @@ export async function downloadGeocode(job_id: string) {
   const link = document.createElement("a")
 
   link.href = url
-  link.setAttribute("download", "geocode_result.xlsx")
+
+  link.setAttribute("download","geocode_result.xlsx")
 
   document.body.appendChild(link)
 

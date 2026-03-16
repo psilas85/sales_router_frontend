@@ -2,8 +2,6 @@
 
 "use client"
 
-"use client"
-
 import { useState } from "react"
 import { uploadGeocode, jobStatus, downloadGeocode } from "@/services/geocoding"
 import api from "@/services/api"
@@ -19,13 +17,27 @@ export default function GeocodePlanilha() {
   const [file, setFile] = useState<File | null>(null)
   const [job, setJob] = useState<any>(null)
   const [loading, setLoading] = useState(false)
+
   const [pontosMapa, setPontosMapa] = useState<any[]>([])
-  
+  const [mapLoaded, setMapLoaded] = useState(false)
+
   function sampleRandom(array: any[], n: number) {
 
-    const shuffled = [...array].sort(() => 0.5 - Math.random())
+    const result: any[] = []
 
-    return shuffled.slice(0, n)
+    const len = array.length
+
+    if (len <= n) return array
+
+    for (let i = 0; i < n; i++) {
+
+      const index = Math.floor(Math.random() * len)
+
+      result.push(array[index])
+
+    }
+
+    return result
 
   }
 
@@ -62,21 +74,8 @@ export default function GeocodePlanilha() {
           step: "Concluído"
         })
 
-        try {
-
-          const res = await api.get(`/geocode/api/v1/job/${job_id}/result`)
-
-          const sample = sampleRandom(res.data, 1000)
-
-          setPontosMapa(sample)
-
-        } catch (err) {
-
-          console.error("Erro ao carregar pontos para mapa", err)
-
-        }
-
         setLoading(false)
+
         clearInterval(interval)
 
         return
@@ -86,6 +85,28 @@ export default function GeocodePlanilha() {
       setJob(status)
 
     }, 2000)
+
+  }
+
+  async function gerarMapa() {
+
+    if (!job?.job_id) return
+
+    try {
+
+      const res = await api.get(`/geocode/api/v1/job/${job.job_id}/result`)
+
+      const sample = sampleRandom(res.data, 1000)
+
+      setPontosMapa(sample)
+
+      setMapLoaded(true)
+
+    } catch (err) {
+
+      console.error("Erro ao carregar pontos para mapa", err)
+
+    }
 
   }
 
@@ -106,7 +127,6 @@ export default function GeocodePlanilha() {
         </p>
 
       </div>
-
 
       {/* UPLOAD */}
 
@@ -129,7 +149,6 @@ export default function GeocodePlanilha() {
 
       </div>
 
-
       {/* STATUS */}
 
       {job && (
@@ -143,7 +162,6 @@ export default function GeocodePlanilha() {
           <div className="text-sm">
             <b>Etapa:</b> {job.step ?? "-"}
           </div>
-
 
           {/* PROGRESS BAR */}
 
@@ -160,7 +178,6 @@ export default function GeocodePlanilha() {
             <b>Progresso:</b> {job.progress ?? 0}%
           </div>
 
-
           {/* DOWNLOAD */}
 
           {job.status === "finished" && (
@@ -174,14 +191,26 @@ export default function GeocodePlanilha() {
 
           )}
 
+          {/* GERAR MAPA */}
+
+          {job.status === "finished" && !mapLoaded && (
+
+            <button
+              onClick={gerarMapa}
+              className="mt-2 ml-2 bg-purple-600 text-white px-4 py-2 rounded"
+            >
+              Gerar mapa
+            </button>
+
+          )}
+
         </div>
 
       )}
 
-
       {/* MAPA */}
 
-      {job?.status === "finished" && pontosMapa.length > 0 && (
+      {mapLoaded && pontosMapa.length > 0 && (
 
         <div className="mt-8 space-y-2">
 
