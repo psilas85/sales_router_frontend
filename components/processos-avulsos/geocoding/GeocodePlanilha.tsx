@@ -5,10 +5,6 @@
 import { useState } from "react"
 import { uploadGeocode, jobStatus, downloadGeocode } from "@/services/geocoding"
 
-<h3 className="text-lg font-semibold">
-  Geolocalização em Lote
-</h3>
-
 export default function GeocodePlanilha() {
 
   const [file, setFile] = useState<File | null>(null)
@@ -50,7 +46,6 @@ export default function GeocodePlanilha() {
 
         setLoading(false)
         clearInterval(interval)
-
         return
       }
 
@@ -77,7 +72,6 @@ export default function GeocodePlanilha() {
 
       </div>
 
-
       {/* UPLOAD */}
       <div className="flex gap-3 items-center">
 
@@ -97,7 +91,6 @@ export default function GeocodePlanilha() {
         </button>
 
       </div>
-
 
       {/* STATUS */}
       {job && (
@@ -126,7 +119,6 @@ export default function GeocodePlanilha() {
             <b>Progresso:</b> {job.progress ?? 0}%
           </div>
 
-          {/* DOWNLOAD */}
           {job.status === "finished" && (
 
             <button
