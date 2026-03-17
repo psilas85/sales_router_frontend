@@ -1,4 +1,4 @@
-// sales_router_frontend/app/(dashboard)/processamento/page.tsx
+//sales_router_frontend/app/(dashboard)/simulador/page.tsx
 
 "use client";
 
