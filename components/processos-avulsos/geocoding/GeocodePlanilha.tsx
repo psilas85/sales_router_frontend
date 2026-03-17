@@ -2,7 +2,7 @@
 
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { uploadGeocode, jobStatus, downloadGeocode } from "@/services/geocoding"
 import api from "@/services/api"
 import dynamic from "next/dynamic"
@@ -29,6 +29,10 @@ export default function GeocodePlanilha() {
   const [pontosMapa, setPontosMapa] = useState<any[]>([])
   const [mapLoaded, setMapLoaded] = useState(false)
 
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
+
+  const [intervalId, setIntervalId] = useState<any>(null)
+
   function resetar() {
     setFile(null)
     setJob(null)
@@ -36,6 +40,13 @@ export default function GeocodePlanilha() {
     setPontosMapa([])
     setMapLoaded(false)
     setLoading(false)
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ""
+    }
+    if (intervalId) {
+      clearInterval(intervalId)
+    }
   }
 
   function sampleRandom(array: any[], n: number) {
@@ -79,6 +90,10 @@ export default function GeocodePlanilha() {
 
     let ativo = true
 
+    if (intervalId) {
+      clearInterval(intervalId)
+    }
+
     const interval = setInterval(async () => {
 
       if (!ativo) return
@@ -111,6 +126,7 @@ export default function GeocodePlanilha() {
 
     }, 2000)
 
+    setIntervalId(interval)
   }
 
   async function gerarMapa() {
@@ -158,6 +174,7 @@ export default function GeocodePlanilha() {
       <div className="flex gap-3 items-center flex-wrap">
 
         <input
+          ref={fileInputRef}
           type="file"
           accept=".xlsx,.csv"
           onChange={(e) => setFile(e.target.files?.[0] || null)}
@@ -167,7 +184,7 @@ export default function GeocodePlanilha() {
         <button
           onClick={enviar}
           disabled={!file || loading}
-          className="bg-blue-600 text-white px-4 py-2 rounded disabled:bg-gray-400"
+          className="bg-blue-600 text-white px-4 py-2 rounded disabled:bg-gray-400 disabled:cursor-not-allowed"
         >
           Enviar planilha
         </button>

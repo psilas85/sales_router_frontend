@@ -144,7 +144,7 @@ export default function SideBar() {
 
               <MenuItem
                 href="/processos-avulsos"
-                label="Geolocalização"
+                label="Geocodificação"
                 icon={<MapPin size={18} />}
                 active={isActive("/processos-avulsos")}
                 collapsed={false}
