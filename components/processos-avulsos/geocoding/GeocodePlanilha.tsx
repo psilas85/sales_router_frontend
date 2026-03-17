@@ -29,6 +29,15 @@ export default function GeocodePlanilha() {
   const [pontosMapa, setPontosMapa] = useState<any[]>([])
   const [mapLoaded, setMapLoaded] = useState(false)
 
+  function resetar() {
+    setFile(null)
+    setJob(null)
+    setResumo(null)
+    setPontosMapa([])
+    setMapLoaded(false)
+    setLoading(false)
+  }
+
   function sampleRandom(array: any[], n: number) {
 
     if (array.length <= n) return array
@@ -68,7 +77,11 @@ export default function GeocodePlanilha() {
 
   async function acompanhar(job_id: string) {
 
+    let ativo = true
+
     const interval = setInterval(async () => {
+
+      if (!ativo) return
 
       const status = await jobStatus(job_id)
 
@@ -81,21 +94,17 @@ export default function GeocodePlanilha() {
         })
 
         if (status.result) {
-
           setResumo({
             total: status.result.total,
             sucesso: status.result.sucesso,
             falhas: status.result.falhas
           })
-
         }
 
         setLoading(false)
-
+        ativo = false
         clearInterval(interval)
-
         return
-
       }
 
       setJob(status)
@@ -128,14 +137,14 @@ export default function GeocodePlanilha() {
 
   return (
 
-    <div className="space-y-6">
+    <div className="space-y-8">
 
       {/* HEADER */}
 
       <div>
 
         <h3 className="text-lg font-semibold">
-          Geolocalização em Lote
+          Geocodificação em Lote
         </h3>
 
         <p className="text-sm text-gray-500">
@@ -146,7 +155,7 @@ export default function GeocodePlanilha() {
 
       {/* UPLOAD */}
 
-      <div className="flex gap-3 items-center">
+      <div className="flex gap-3 items-center flex-wrap">
 
         <input
           type="file"
@@ -162,6 +171,15 @@ export default function GeocodePlanilha() {
         >
           Enviar planilha
         </button>
+
+        {job && (
+          <button
+            onClick={resetar}
+            className="px-4 py-2 border rounded hover:bg-gray-50 text-sm"
+          >
+            Novo upload
+          </button>
+        )}
 
       </div>
 
