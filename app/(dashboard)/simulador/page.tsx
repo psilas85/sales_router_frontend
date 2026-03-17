@@ -30,7 +30,7 @@ export default function ProcessamentoPage() {
   return (
     <div className="px-6 pt-4 pb-6 space-y-4">
       <h1 className="text-xl font-semibold text-gray-900">
-        Processamento
+        Simulador
       </h1>
 
       {/* ABAS */}
