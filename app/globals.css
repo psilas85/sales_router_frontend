@@ -90,7 +90,7 @@ html, body {
 /* CARDS                              */
 /* ---------------------------------- */
 .card {
-  @apply bg-white border border-gray-200 rounded-xl p-6 transition;
+  @apply bg-white border border-gray-200 rounded-xl p-6 transition shadow-sm;
 }
 
 .card:hover {
@@ -98,7 +98,7 @@ html, body {
 }
 
 .card-clickable {
-  @apply card cursor-pointer hover:border-gray-300;
+  @apply card cursor-pointer hover:shadow-md hover:-translate-y-0.5;
 }
 
 /* ---------------------------------- */

@@ -28,28 +28,34 @@ export default function HomePage() {
         </div>
 
         <div className="grid md:grid-cols-3 gap-6">
-          <Link href="/processamento?tab=entrada" className="card">
-            <Upload className="text-blue-600 mb-3" />
-            <h3 className="font-semibold">Upload de Dados</h3>
-            <p className="text-sm text-gray-500">
-              Envie a base para iniciar a simulação
-            </p>
+          <Link href="/simulador?tab=entrada">
+            <div className="card card-clickable">
+              <Upload className="text-blue-600 mb-3" />
+              <h3 className="font-semibold">Upload de Dados</h3>
+              <p className="text-sm text-gray-500">
+                Envie a base para iniciar a simulação
+              </p>
+            </div>
           </Link>
 
-          <Link href="/processamento?tab=setorizacao" className="card">
-            <Layers3 className="text-blue-600 mb-3" />
-            <h3 className="font-semibold">Setorização automática</h3>
-            <p className="text-sm text-gray-500">
-              Geração automática de territórios
-            </p>
+          <Link href="/simulador?tab=setorizacao">
+            <div className="card card-clickable">
+              <Layers3 className="text-blue-600 mb-3" />
+              <h3 className="font-semibold">Setorização automática</h3>
+              <p className="text-sm text-gray-500">
+                Geração automática de territórios
+              </p>
+            </div>
           </Link>
 
-          <Link href="/processamento?tab=roteirizacao" className="card">
-            <Route className="text-blue-600 mb-3" />
-            <h3 className="font-semibold">Roteirização automática</h3>
-            <p className="text-sm text-gray-500">
-              Rotas otimizadas automaticamente
-            </p>
+          <Link href="/simulador?tab=roteirizacao">
+            <div className="card card-clickable">
+              <Route className="text-blue-600 mb-3" />
+              <h3 className="font-semibold">Roteirização automática</h3>
+              <p className="text-sm text-gray-500">
+                Rotas otimizadas automaticamente
+              </p>
+            </div>
           </Link>
         </div>
       </div>
