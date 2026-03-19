@@ -4,11 +4,14 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Title from "@/components/Title";
 import { criarConsultor } from "@/services/consultores";
+import { geocodeEndereco } from "@/services/geocoding";
 
 export default function NovoConsultorPage() {
 
   const router = useRouter();
+
   const [saving, setSaving] = useState(false);
+  const [geoLoading, setGeoLoading] = useState(false);
 
   const [form, setForm] = useState({
     consultor: "",
@@ -35,10 +38,49 @@ export default function NovoConsultorPage() {
     return value.replace(/\D/g, "");
   }
 
+  // =========================
+  // 🔥 GEOCODIFICAR
+  // =========================
+  async function handleGeocodificar() {
+
+    if (!form.logradouro || !form.numero || !form.cidade || !form.uf) {
+      alert("Preencha endereço completo antes de geocodificar");
+      return;
+    }
+
+    try {
+
+      setGeoLoading(true);
+
+      const res = await geocodeEndereco({
+        endereco: `${form.logradouro}, ${form.numero}`,
+        cidade: form.cidade,
+        uf: form.uf,
+      });
+
+      if (res.status !== "ok") {
+        alert("Endereço não encontrado");
+        return;
+      }
+
+      setForm((prev) => ({
+        ...prev,
+        lat: String(res.lat),
+        lon: String(res.lon),
+      }));
+
+    } catch (err) {
+      console.error(err);
+      alert("Erro ao geocodificar");
+    } finally {
+      setGeoLoading(false);
+    }
+  }
+
   function validar() {
 
     if (!form.lat || !form.lon) {
-      alert("Lat e Lon são obrigatórios");
+      alert("Clique em GEOCODIFICAR antes de salvar");
       return false;
     }
 
@@ -70,9 +112,6 @@ export default function NovoConsultorPage() {
     try {
 
       setSaving(true);
-
-      console.log("ANTES DE ENVIAR:", form.lat, form.lon);
-      console.log("PARSEADO:", parseFloat(form.lat), parseFloat(form.lon));
 
       await criarConsultor({
         ...form,
@@ -107,13 +146,13 @@ export default function NovoConsultorPage() {
 
       <div className="bg-white rounded-xl border p-6 space-y-4">
 
-        <input name="consultor" value={form.consultor} onChange={handleChange} placeholder="Nome do consultor" className="input-base" />
+        <input name="consultor" value={form.consultor} onChange={handleChange} placeholder="Nome" className="input-base" />
 
-        <input name="cpf" value={form.cpf} onChange={handleChange} placeholder="CPF (11 dígitos)" className="input-base" />
+        <input name="cpf" value={form.cpf} onChange={handleChange} placeholder="CPF" className="input-base" />
 
         <input name="setor" value={form.setor} onChange={handleChange} placeholder="Setor" className="input-base" />
 
-        <input name="cep" value={form.cep} onChange={handleChange} placeholder="CEP (8 dígitos)" className="input-base" />
+        <input name="cep" value={form.cep} onChange={handleChange} placeholder="CEP" className="input-base" />
 
         <input name="logradouro" value={form.logradouro} onChange={handleChange} placeholder="Logradouro" className="input-base" />
 
@@ -125,20 +164,41 @@ export default function NovoConsultorPage() {
 
         <input name="uf" value={form.uf} onChange={handleChange} placeholder="UF" className="input-base" />
 
+        {/* 🔥 BOTÃO GEOCODIFICAR */}
+        <div className="flex justify-end">
+          <button
+            type="button"
+            onClick={handleGeocodificar}
+            disabled={geoLoading}
+            className="bg-gray-200 px-4 py-2 rounded text-sm hover:bg-gray-300"
+          >
+            {geoLoading ? "Geocodificando..." : "Geocodificar endereço"}
+          </button>
+        </div>
+
+        {/* 🔥 LAT LON BLOQUEADO */}
         <div className="grid grid-cols-2 gap-3">
-          <input name="lat" value={form.lat} onChange={handleChange} placeholder="Latitude (-23.55...)" className="input-base" />
-          <input name="lon" value={form.lon} onChange={handleChange} placeholder="Longitude (-46.63...)" className="input-base" />
+          <input
+            name="lat"
+            value={form.lat}
+            readOnly
+            className="input-base bg-gray-100"
+            placeholder="Latitude"
+          />
+          <input
+            name="lon"
+            value={form.lon}
+            readOnly
+            className="input-base bg-gray-100"
+            placeholder="Longitude"
+          />
         </div>
 
       </div>
 
       <div className="flex gap-3">
 
-        <button
-          onClick={salvar}
-          disabled={saving}
-          className="btn-primary"
-        >
+        <button onClick={salvar} disabled={saving} className="btn-primary">
           {saving ? "Salvando..." : "Criar consultor"}
         </button>
 
