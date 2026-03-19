@@ -28,6 +28,10 @@ export default function ProcessamentoPage() {
   const [dadosHistorico, setDadosHistorico] = useState<any[]>([]);
   const [loadingHistorico, setLoadingHistorico] = useState(false);
 
+  const [page, setPage] = useState(1);
+  const [limit] = useState(20);
+  const [total, setTotal] = useState(0);
+
   useEffect(() => {
     if (
       tabParam === "entrada" ||
@@ -39,15 +43,20 @@ export default function ProcessamentoPage() {
     }
   }, [tabParam]);
 
-  async function carregarHistorico() {
+  async function carregarHistorico(pageAtual = 1) {
     setLoadingHistorico(true);
 
+    const offset = (pageAtual - 1) * limit;
+
     const res = await listarHistoricoProcessamentos({
-      limit: 20,
-      offset: 0,
+      limit,
+      offset,
     });
 
-    setDadosHistorico(res.dados);
+    setDadosHistorico(res.dados || []);
+    setTotal(res.total || 0);
+    setPage(pageAtual);
+
     setLoadingHistorico(false);
   }
 
@@ -55,7 +64,7 @@ export default function ProcessamentoPage() {
     setTab(nova);
 
     if (nova === "historico") {
-      carregarHistorico();
+      carregarHistorico(1);
     }
   }
 
@@ -102,7 +111,6 @@ export default function ProcessamentoPage() {
           Roteirização
         </button>
 
-        {/* NOVA ABA */}
         <button
           onClick={() => handleTab("historico")}
           className={`pb-2 ${
@@ -125,6 +133,10 @@ export default function ProcessamentoPage() {
         <HistoricoTable
           dados={dadosHistorico}
           loading={loadingHistorico}
+          page={page}
+          total={total}
+          limit={limit}
+          onPageChange={carregarHistorico}
         />
       )}
 
