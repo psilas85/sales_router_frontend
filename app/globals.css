@@ -6,7 +6,7 @@
 /* FONTE GLOBAL                       */
 /* ---------------------------------- */
 body {
-  @apply text-gray-700 font-sans antialiased;
+  @apply text-gray-800 font-sans antialiased bg-gray-50;
 }
 
 /* ---------------------------------- */
@@ -31,7 +31,7 @@ html, body {
 }
 
 /* ---------------------------------- */
-/* CORES DO TEMA (CONTRASTE AJUSTADO) */
+/* CORES DO TEMA                      */
 /* ---------------------------------- */
 :root {
   --brand: #0047cc;
@@ -79,7 +79,52 @@ html, body {
 }
 
 /* ---------------------------------- */
-/* ANIMAÇÃO                          */
+/* BOTÃO SECUNDÁRIO                   */
+/* ---------------------------------- */
+.btn-secondary {
+  @apply px-4 py-2 rounded-lg border border-gray-300 text-sm font-medium
+         text-gray-700 hover:bg-gray-50 transition;
+}
+
+/* ---------------------------------- */
+/* CARDS                              */
+/* ---------------------------------- */
+.card {
+  @apply bg-white border border-gray-200 rounded-xl p-6 transition;
+}
+
+.card:hover {
+  @apply shadow-md;
+}
+
+.card-clickable {
+  @apply card cursor-pointer hover:border-gray-300;
+}
+
+/* ---------------------------------- */
+/* HEADERS                            */
+/* ---------------------------------- */
+.section-title {
+  @apply text-xl font-semibold flex items-center gap-2;
+}
+
+.section-subtitle {
+  @apply text-sm text-gray-500 mt-1;
+}
+
+/* ---------------------------------- */
+/* CONTEXTOS (DIFERENCIAÇÃO VISUAL)   */
+/* ---------------------------------- */
+.context-simulacao {
+  @apply border-l-4 border-blue-500 pl-4;
+}
+
+.context-execucao {
+  @apply border-l-4 border-orange-500 pl-4;
+}
+
+/* ---------------------------------- */
+/* ANIMAÇÃO                           */
 /* ---------------------------------- */
 @keyframes fade-in {
   from {
@@ -117,5 +162,3 @@ html, body {
 .leaflet-control {
   z-index: 3;
 }
-
-
