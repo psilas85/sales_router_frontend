@@ -88,16 +88,7 @@ export default function SideBar() {
           active={isActive("/simulador")}
           collapsed={sidebarCollapsed}
         />
-
-        {/* HISTÓRICO */}
-        <MenuItem
-          href="/historico"
-          label="Histórico"
-          icon={<Clock size={20} />}
-          active={isActive("/historico")}
-          collapsed={sidebarCollapsed}
-        />
-
+        
         {/* PROCESSOS AVULSOS */}
         <div>
 

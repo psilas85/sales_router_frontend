@@ -1,79 +1,85 @@
-//sales_router_frontend/app/(dashboard)/simulador/page.tsx
-
 "use client";
 
-import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useState } from "react";
+import Title from "@/components/Title";
+import HistoricoTable from "@/components/historico/HistoricoTable";
 
-import EntradaDadosTab from "@/components/processamento/entrada-de-dados/EntradaDadosTab";
-import SetorizacaoTab from "@/components/processamento/setorizacao/SetorizacaoTab";
-import RoteirizacaoTab from "@/components/processamento/roteirizacao/RoteirizacaoTab";
+import {
+  listarHistoricoProcessamentos,
+  TipoProcessamento,
+} from "@/services/historico";
 
-type Aba = "entrada" | "setorizacao" | "roteirizacao";
+type Aba = "simulacao" | "historico";
 
-export default function ProcessamentoPage() {
-  const searchParams = useSearchParams();
-  const tabParam = searchParams.get("tab") as Aba | null;
+export default function SimuladorPage() {
 
-  const [tab, setTab] = useState<Aba>("setorizacao");
+  const [aba, setAba] = useState<Aba>("simulacao");
 
-  useEffect(() => {
-    if (
-      tabParam === "entrada" ||
-      tabParam === "setorizacao" ||
-      tabParam === "roteirizacao"
-    ) {
-      setTab(tabParam);
+  const [dados, setDados] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  async function carregarHistorico() {
+    setLoading(true);
+
+    const res = await listarHistoricoProcessamentos({
+      limit: 20,
+      offset: 0,
+    });
+
+    setDados(res.dados);
+    setLoading(false);
+  }
+
+  function handleAba(nova: Aba) {
+    setAba(nova);
+
+    if (nova === "historico") {
+      carregarHistorico();
     }
-  }, [tabParam]);
+  }
 
   return (
-    <div className="px-6 pt-4 pb-6 space-y-4">
-      <h1 className="text-xl font-semibold text-gray-900">
-        Simulador
-      </h1>
+    <>
+      <Title>Simulador</Title>
 
       {/* ABAS */}
-      <div className="flex gap-6 border-b text-sm">
+      <div className="flex gap-2 mb-4">
+
         <button
-          onClick={() => setTab("entrada")}
-          className={`pb-2 ${
-            tab === "entrada"
-              ? "text-brand font-semibold border-b-2 border-brand"
-              : "text-gray-500"
+          onClick={() => handleAba("simulacao")}
+          className={`px-4 py-2 rounded ${
+            aba === "simulacao"
+              ? "bg-brand text-white"
+              : "bg-gray-100"
           }`}
         >
-          Entrada de Dados
+          Simulação
         </button>
 
         <button
-          onClick={() => setTab("setorizacao")}
-          className={`pb-2 ${
-            tab === "setorizacao"
-              ? "text-brand font-semibold border-b-2 border-brand"
-              : "text-gray-500"
+          onClick={() => handleAba("historico")}
+          className={`px-4 py-2 rounded ${
+            aba === "historico"
+              ? "bg-brand text-white"
+              : "bg-gray-100"
           }`}
         >
-          Setorização
+          Histórico
         </button>
 
-        <button
-          onClick={() => setTab("roteirizacao")}
-          className={`pb-2 ${
-            tab === "roteirizacao"
-              ? "text-brand font-semibold border-b-2 border-brand"
-              : "text-gray-500"
-          }`}
-        >
-          Roteirização
-        </button>
       </div>
 
       {/* CONTEÚDO */}
-      {tab === "entrada" && <EntradaDadosTab />}
-      {tab === "setorizacao" && <SetorizacaoTab />}
-      {tab === "roteirizacao" && <RoteirizacaoTab />}
-    </div>
+      {aba === "simulacao" && (
+        <div className="bg-white p-6 rounded shadow">
+          {/* aqui entra seu simulador atual */}
+          Simulador (conteúdo atual)
+        </div>
+      )}
+
+      {aba === "historico" && (
+        <HistoricoTable dados={dados} loading={loading} />
+      )}
+    </>
   );
 }
-
