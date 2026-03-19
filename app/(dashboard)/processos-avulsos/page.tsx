@@ -2,16 +2,35 @@
 
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useSearchParams } from "next/navigation"
 
 import Title from "@/components/Title"
 import GeocodePlanilha from "@/components/processos-avulsos/geocoding/GeocodePlanilha"
 import EdicaoEnderecos from "@/components/processos-avulsos/geocoding/EdicaoEnderecos"
 import RoutingPlanilha from "@/components/processos-avulsos/routing/RoutingPlanilha"
 
+type Aba = "geocode" | "routing" | "edicao"
+
 export default function Page() {
 
-  const [tab, setTab] = useState("geocode")
+  const searchParams = useSearchParams()
+  const tabParam = searchParams.get("tab") as Aba | null
+
+  const [tab, setTab] = useState<Aba>("geocode")
+
+  // 🔥 sincroniza com URL
+  useEffect(() => {
+
+    if (
+      tabParam === "geocode" ||
+      tabParam === "routing" ||
+      tabParam === "edicao"
+    ) {
+      setTab(tabParam)
+    }
+
+  }, [tabParam])
 
   return (
 
@@ -69,5 +88,4 @@ export default function Page() {
     </div>
 
   )
-
 }
