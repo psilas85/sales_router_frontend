@@ -72,9 +72,6 @@ export default function MapaBase({ pontos = [], geojson }: Props) {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
 
-      {/* =========================
-          GEOJSON (ROTAS)
-      ========================= */}
       {geojson && (
         <GeoJSON
           data={geojson}
@@ -95,7 +92,7 @@ export default function MapaBase({ pontos = [], geojson }: Props) {
             }
 
             return {
-              color: feature?.properties?.color || "#2563eb",
+              color: feature?.properties?.color,
               weight: visible ? 5 : 1,
               opacity: visible ? 1 : 0.08
             }
@@ -114,9 +111,9 @@ export default function MapaBase({ pontos = [], geojson }: Props) {
               }
 
               return L.circleMarker(latlng, {
-                radius: visible ? 9 : 5,
+                radius: visible ? 9 : 6,
                 color: "#000",
-                fillColor: feature?.properties?.color || "#2563eb",
+                fillColor: feature?.properties?.color,
                 fillOpacity: visible ? 1 : 0.3
               })
             }
@@ -132,18 +129,25 @@ export default function MapaBase({ pontos = [], geojson }: Props) {
             const rotaId = feature?.properties?.rota_id
             const cluster = feature?.properties?.cluster
             const tipo = feature?.properties?.tipo
+            const consultor = feature?.properties?.consultor
 
             // hover rota
             if (feature.geometry.type === "LineString") {
-
               layer.on({
                 mouseover: () => setHoverRota(rotaId),
                 mouseout: () => setHoverRota(null)
               })
             }
 
-            // hover base (centro)
+            // base
             if (tipo === "centro") {
+
+              layer.bindPopup(`
+                <div style="font-size:12px">
+                  <strong>${consultor || "Consultor"}</strong><br/>
+                  Setor: ${cluster}
+                </div>
+              `)
 
               layer.on({
                 mouseover: () => setHoverCluster(cluster),
@@ -156,9 +160,6 @@ export default function MapaBase({ pontos = [], geojson }: Props) {
         />
       )}
 
-      {/* =========================
-          PONTOS (LEGADO)
-      ========================= */}
       {validos.map((p, i) => (
         <Marker
           key={i}
