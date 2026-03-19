@@ -1,37 +1,58 @@
 "use client";
 
-import { useState } from "react";
-import Title from "@/components/Title";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+
+import EntradaDadosTab from "@/components/processamento/entrada-de-dados/EntradaDadosTab";
+import SetorizacaoTab from "@/components/processamento/setorizacao/SetorizacaoTab";
+import RoteirizacaoTab from "@/components/processamento/roteirizacao/RoteirizacaoTab";
 import HistoricoTable from "@/components/historico/HistoricoTable";
 
 import {
-  listarHistoricoProcessamentos,
-  TipoProcessamento,
+  listarHistoricoProcessamentos
 } from "@/services/historico";
 
-type Aba = "simulacao" | "historico";
+type Aba =
+  | "entrada"
+  | "setorizacao"
+  | "roteirizacao"
+  | "historico";
 
-export default function SimuladorPage() {
+export default function ProcessamentoPage() {
 
-  const [aba, setAba] = useState<Aba>("simulacao");
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get("tab") as Aba | null;
 
-  const [dados, setDados] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [tab, setTab] = useState<Aba>("setorizacao");
+
+  const [dadosHistorico, setDadosHistorico] = useState<any[]>([]);
+  const [loadingHistorico, setLoadingHistorico] = useState(false);
+
+  useEffect(() => {
+    if (
+      tabParam === "entrada" ||
+      tabParam === "setorizacao" ||
+      tabParam === "roteirizacao" ||
+      tabParam === "historico"
+    ) {
+      setTab(tabParam);
+    }
+  }, [tabParam]);
 
   async function carregarHistorico() {
-    setLoading(true);
+    setLoadingHistorico(true);
 
     const res = await listarHistoricoProcessamentos({
       limit: 20,
       offset: 0,
     });
 
-    setDados(res.dados);
-    setLoading(false);
+    setDadosHistorico(res.dados);
+    setLoadingHistorico(false);
   }
 
-  function handleAba(nova: Aba) {
-    setAba(nova);
+  function handleTab(nova: Aba) {
+    setTab(nova);
 
     if (nova === "historico") {
       carregarHistorico();
@@ -39,29 +60,55 @@ export default function SimuladorPage() {
   }
 
   return (
-    <>
-      <Title>Simulador</Title>
+    <div className="px-6 pt-4 pb-6 space-y-4">
+
+      <h1 className="text-xl font-semibold text-gray-900">
+        Simulador
+      </h1>
 
       {/* ABAS */}
-      <div className="flex gap-2 mb-4">
+      <div className="flex gap-6 border-b text-sm">
 
         <button
-          onClick={() => handleAba("simulacao")}
-          className={`px-4 py-2 rounded ${
-            aba === "simulacao"
-              ? "bg-brand text-white"
-              : "bg-gray-100"
+          onClick={() => handleTab("entrada")}
+          className={`pb-2 ${
+            tab === "entrada"
+              ? "text-brand font-semibold border-b-2 border-brand"
+              : "text-gray-500"
           }`}
         >
-          Simulação
+          Entrada de Dados
         </button>
 
         <button
-          onClick={() => handleAba("historico")}
-          className={`px-4 py-2 rounded ${
-            aba === "historico"
-              ? "bg-brand text-white"
-              : "bg-gray-100"
+          onClick={() => handleTab("setorizacao")}
+          className={`pb-2 ${
+            tab === "setorizacao"
+              ? "text-brand font-semibold border-b-2 border-brand"
+              : "text-gray-500"
+          }`}
+        >
+          Setorização
+        </button>
+
+        <button
+          onClick={() => handleTab("roteirizacao")}
+          className={`pb-2 ${
+            tab === "roteirizacao"
+              ? "text-brand font-semibold border-b-2 border-brand"
+              : "text-gray-500"
+          }`}
+        >
+          Roteirização
+        </button>
+
+        {/* NOVA ABA */}
+        <button
+          onClick={() => handleTab("historico")}
+          className={`pb-2 ${
+            tab === "historico"
+              ? "text-brand font-semibold border-b-2 border-brand"
+              : "text-gray-500"
           }`}
         >
           Histórico
@@ -70,16 +117,17 @@ export default function SimuladorPage() {
       </div>
 
       {/* CONTEÚDO */}
-      {aba === "simulacao" && (
-        <div className="bg-white p-6 rounded shadow">
-          {/* aqui entra seu simulador atual */}
-          Simulador (conteúdo atual)
-        </div>
+      {tab === "entrada" && <EntradaDadosTab />}
+      {tab === "setorizacao" && <SetorizacaoTab />}
+      {tab === "roteirizacao" && <RoteirizacaoTab />}
+
+      {tab === "historico" && (
+        <HistoricoTable
+          dados={dadosHistorico}
+          loading={loadingHistorico}
+        />
       )}
 
-      {aba === "historico" && (
-        <HistoricoTable dados={dados} loading={loading} />
-      )}
-    </>
+    </div>
   );
 }

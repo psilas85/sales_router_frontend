@@ -88,7 +88,8 @@ export default function SideBar() {
           active={isActive("/simulador")}
           collapsed={sidebarCollapsed}
         />
-        
+
+
         {/* PROCESSOS AVULSOS */}
         <div>
 
