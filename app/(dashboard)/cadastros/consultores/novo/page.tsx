@@ -71,6 +71,9 @@ export default function NovoConsultorPage() {
 
       setSaving(true);
 
+      console.log("ANTES DE ENVIAR:", form.lat, form.lon);
+      console.log("PARSEADO:", parseFloat(form.lat), parseFloat(form.lon));
+
       await criarConsultor({
         ...form,
         cpf: onlyNumbers(form.cpf),

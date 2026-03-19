@@ -103,6 +103,9 @@ export default function EditarConsultorPage() {
 
       setSaving(true);
 
+      console.log("ANTES DE ENVIAR:", form.lat, form.lon);
+      console.log("PARSEADO:", parseNumber(form.lat), parseNumber(form.lon));
+
       await atualizarConsultor(id, {
         ...form,
         cpf: onlyNumbers(form.cpf),
