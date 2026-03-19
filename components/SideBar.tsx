@@ -81,7 +81,7 @@ export default function SideBar() {
         {/* SIMULADOR */}
         <MenuItem
           href="/simulador?tab=entrada"
-          label="Simulador"
+          label="Simulação Inteligente"
           icon={<Layers3 size={20} />}
           active={isActive("/simulador")}
           collapsed={sidebarCollapsed}
@@ -116,7 +116,7 @@ export default function SideBar() {
             {!sidebarCollapsed && (
               <>
                 <span className="flex-1 text-left">
-                  Processos Avulsos
+                  Execução Operacional
                 </span>
 
                 <span className="text-xs">
