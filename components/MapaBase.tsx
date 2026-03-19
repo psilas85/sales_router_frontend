@@ -77,17 +77,36 @@ export default function MapaBase({ pontos = [], geojson }: Props) {
       {geojson && (
         <GeoJSON
           data={geojson}
-          style={(feature) => {
+
+          style={(feature: any) => {
 
             if (feature?.geometry?.type === "LineString") {
               return {
-                color: "#2563eb",
+                color: feature?.properties?.color || "#2563eb",
                 weight: 4
               }
             }
 
             return {}
           }}
+
+          pointToLayer={(feature: any, latlng: any) => {
+
+            if (feature?.properties?.tipo === "centro") {
+              return L.circleMarker(latlng, {
+                radius: 8,
+                color: "#000",
+                fillColor: feature?.properties?.color || "#2563eb",
+                fillOpacity: 1
+              })
+            }
+
+            return L.circleMarker(latlng, {
+              radius: 3,
+              color: "#999"
+            })
+          }}
+
         />
       )}
 
