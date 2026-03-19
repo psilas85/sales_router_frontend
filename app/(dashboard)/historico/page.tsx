@@ -1,5 +1,3 @@
-// sales_router_frontend/app/(dashboard)/historico/page.tsx
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -21,10 +19,7 @@ export default function HistoricoPage() {
   const [pagina, setPagina] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  // 👉 filtros que o usuário está digitando
   const [filtrosDraft, setFiltrosDraft] = useState<FiltrosUI>({});
-
-  // 👉 filtros efetivamente aplicados
   const [filtrosAplicados, setFiltrosAplicados] = useState<FiltrosUI>({});
 
   async function carregar(p = pagina, filtros = filtrosAplicados) {
@@ -48,21 +43,16 @@ export default function HistoricoPage() {
     setFiltrosAplicados({ ...filtrosDraft });
   }
 
-
-
   function limparFiltros() {
     setFiltrosDraft({});
     setFiltrosAplicados({});
     setPagina(0);
   }
 
-  // 🔑 busca só quando página OU filtrosAplicados mudam
   useEffect(() => {
     carregar(pagina, filtrosAplicados);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pagina, filtrosAplicados]);
-
-  const totalPaginas = Math.ceil(total / PAGE_SIZE) || 1;
 
   return (
     <>
@@ -122,7 +112,6 @@ export default function HistoricoPage() {
           <option value="Upload">Upload</option>
           <option value="Setorização">Setorização</option>
           <option value="Roteirização">Roteirização</option>
-
         </select>
 
         <select
@@ -157,28 +146,15 @@ export default function HistoricoPage() {
         </button>
       </div>
 
-      <HistoricoTable dados={dados} loading={loading} />
-
-      {/* PAGINAÇÃO */}
-      <div className="flex justify-between mt-4">
-        <span>
-          Página {pagina + 1} de {totalPaginas}
-        </span>
-        <div className="space-x-2">
-          <button
-            disabled={pagina === 0}
-            onClick={() => setPagina((p) => p - 1)}
-          >
-            Anterior
-          </button>
-          <button
-            disabled={pagina + 1 >= totalPaginas}
-            onClick={() => setPagina((p) => p + 1)}
-          >
-            Próxima
-          </button>
-        </div>
-      </div>
+      {/* TABELA + PAGINAÇÃO CENTRALIZADA */}
+      <HistoricoTable
+        dados={dados}
+        loading={loading}
+        page={pagina + 1}
+        total={total}
+        limit={PAGE_SIZE}
+        onPageChange={(p) => setPagina(p - 1)}
+      />
     </>
   );
 }
