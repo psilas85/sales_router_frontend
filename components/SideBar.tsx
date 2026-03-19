@@ -150,6 +150,14 @@ export default function SideBar() {
                 collapsed={false}
               />
 
+              <MenuItem
+                href="/processos-avulsos?tab=routing"
+                label="Roteirização"
+                icon={<MapPin size={18} />}
+                active={pathname.includes("tab=routing")}
+                collapsed={false}
+              />
+
             </div>
 
           )}
