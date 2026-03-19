@@ -1,5 +1,3 @@
-//sales_router_frontend/components/MapaBase.tsx
-
 "use client";
 
 import {
@@ -12,6 +10,7 @@ import {
 
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
+import { useState } from "react";
 
 const icon = L.icon({
   iconUrl: "/marker.png",
@@ -27,6 +26,9 @@ type Props = {
 
 export default function MapaBase({ pontos = [], geojson }: Props) {
 
+  const [hoverCluster, setHoverCluster] = useState<string | null>(null)
+  const [hoverRota, setHoverRota] = useState<string | null>(null)
+
   const validos = pontos.filter(
     (p) =>
       p.lat !== null &&
@@ -35,7 +37,6 @@ export default function MapaBase({ pontos = [], geojson }: Props) {
       !isNaN(p.lon)
   )
 
-  // prioridade: geojson
   let center: [number, number] = [-23.55, -46.63]
 
   if (geojson?.features?.length) {
@@ -80,24 +81,43 @@ export default function MapaBase({ pontos = [], geojson }: Props) {
 
           style={(feature: any) => {
 
-            if (feature?.geometry?.type === "LineString") {
-              return {
-                color: feature?.properties?.color || "#2563eb",
-                weight: 4
-              }
+            if (feature?.geometry?.type !== "LineString") return {}
+
+            const rotaId = feature?.properties?.rota_id
+            const cluster = feature?.properties?.cluster
+
+            let visible = true
+
+            if (hoverRota) {
+              visible = rotaId === hoverRota
+            } else if (hoverCluster) {
+              visible = cluster === hoverCluster
             }
 
-            return {}
+            return {
+              color: feature?.properties?.color || "#2563eb",
+              weight: visible ? 5 : 1,
+              opacity: visible ? 1 : 0.08
+            }
           }}
 
           pointToLayer={(feature: any, latlng: any) => {
 
             if (feature?.properties?.tipo === "centro") {
+
+              const cluster = feature?.properties?.cluster
+
+              let visible = true
+
+              if (hoverCluster) {
+                visible = cluster === hoverCluster
+              }
+
               return L.circleMarker(latlng, {
-                radius: 8,
+                radius: visible ? 9 : 5,
                 color: "#000",
                 fillColor: feature?.properties?.color || "#2563eb",
-                fillOpacity: 1
+                fillOpacity: visible ? 1 : 0.3
               })
             }
 
@@ -105,6 +125,32 @@ export default function MapaBase({ pontos = [], geojson }: Props) {
               radius: 3,
               color: "#999"
             })
+          }}
+
+          onEachFeature={(feature: any, layer: any) => {
+
+            const rotaId = feature?.properties?.rota_id
+            const cluster = feature?.properties?.cluster
+            const tipo = feature?.properties?.tipo
+
+            // hover rota
+            if (feature.geometry.type === "LineString") {
+
+              layer.on({
+                mouseover: () => setHoverRota(rotaId),
+                mouseout: () => setHoverRota(null)
+              })
+            }
+
+            // hover base (centro)
+            if (tipo === "centro") {
+
+              layer.on({
+                mouseover: () => setHoverCluster(cluster),
+                mouseout: () => setHoverCluster(null)
+              })
+            }
+
           }}
 
         />
