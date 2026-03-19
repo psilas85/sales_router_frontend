@@ -1,7 +1,5 @@
 // sales_router_frontend/components/SideBar.tsx
 
-// sales_router_frontend/components/SideBar.tsx
-
 "use client";
 
 import Link from "next/link";
@@ -82,7 +80,7 @@ export default function SideBar() {
 
         {/* SIMULADOR */}
         <MenuItem
-          href="/simulador"
+          href="/simulador?tab=entrada"
           label="Simulador"
           icon={<Layers3 size={20} />}
           active={isActive("/simulador")}
