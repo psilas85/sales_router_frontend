@@ -1,4 +1,4 @@
-//sales_router_frontend/app/(dashboard)/cadastros/consultores/[id]/page.tsx
+// sales_router_frontend/app/(dashboard)/cadastros/consultores/[id]/page.tsx
 
 "use client";
 
@@ -29,7 +29,13 @@ export default function EditarConsultorPage() {
     bairro: "",
     cidade: "",
     uf: "",
+    lat: "",
+    lon: "",
   });
+
+  function parseNumber(value: string) {
+    return Number(value.replace(",", "."));
+  }
 
   async function carregar() {
 
@@ -47,6 +53,8 @@ export default function EditarConsultorPage() {
         bairro: data.bairro || "",
         cidade: data.cidade || "",
         uf: data.uf || "",
+        lat: data.lat?.toString() || "",
+        lon: data.lon?.toString() || "",
       });
 
     } catch (err) {
@@ -61,20 +69,38 @@ export default function EditarConsultorPage() {
   }, []);
 
   function handleChange(e: any) {
-
     setForm({
       ...form,
       [e.target.name]: e.target.value,
     });
   }
 
+  function validar() {
+
+    const lat = parseNumber(form.lat);
+    const lon = parseNumber(form.lon);
+
+    if (isNaN(lat) || isNaN(lon)) {
+      alert("Lat/Lon inválidos");
+      return false;
+    }
+
+    return true;
+  }
+
   async function salvar() {
+
+    if (!validar()) return;
 
     try {
 
       setSaving(true);
 
-      await atualizarConsultor(id, form);
+      await atualizarConsultor(id, {
+        ...form,
+        lat: parseNumber(form.lat),
+        lon: parseNumber(form.lon),
+      });
 
       alert("Consultor atualizado com sucesso");
 
@@ -92,7 +118,6 @@ export default function EditarConsultorPage() {
   }
 
   if (loading) {
-
     return (
       <div className="p-8 text-sm text-gray-500">
         Carregando consultor...
@@ -114,92 +139,41 @@ export default function EditarConsultorPage() {
 
       <div className="bg-white rounded-xl border p-6 space-y-4">
 
-        <input
-          name="consultor"
-          value={form.consultor}
-          onChange={handleChange}
-          placeholder="Nome do consultor"
-          className="w-full border rounded-lg p-2 text-sm"
-        />
+        <input name="consultor" value={form.consultor} onChange={handleChange} placeholder="Nome do consultor" className="input-base" />
 
-        <input
-          name="cpf"
-          value={form.cpf}
-          disabled
-          className="w-full border rounded-lg p-2 text-sm bg-gray-100"
-        />
+        <input name="cpf" value={form.cpf} disabled className="input-base bg-gray-100" />
 
-        <input
-          name="setor"
-          value={form.setor}
-          onChange={handleChange}
-          placeholder="Setor"
-          className="w-full border rounded-lg p-2 text-sm"
-        />
+        <input name="setor" value={form.setor} onChange={handleChange} placeholder="Setor" className="input-base" />
 
-        <input
-          name="cep"
-          value={form.cep}
-          onChange={handleChange}
-          placeholder="CEP"
-          className="w-full border rounded-lg p-2 text-sm"
-        />
+        <input name="cep" value={form.cep} onChange={handleChange} placeholder="CEP" className="input-base" />
 
-        <input
-          name="logradouro"
-          value={form.logradouro}
-          onChange={handleChange}
-          placeholder="Logradouro"
-          className="w-full border rounded-lg p-2 text-sm"
-        />
+        <input name="logradouro" value={form.logradouro} onChange={handleChange} placeholder="Logradouro" className="input-base" />
 
-        <input
-          name="numero"
-          value={form.numero}
-          onChange={handleChange}
-          placeholder="Número"
-          className="w-full border rounded-lg p-2 text-sm"
-        />
+        <input name="numero" value={form.numero} onChange={handleChange} placeholder="Número" className="input-base" />
 
-        <input
-          name="bairro"
-          value={form.bairro}
-          onChange={handleChange}
-          placeholder="Bairro"
-          className="w-full border rounded-lg p-2 text-sm"
-        />
+        <input name="bairro" value={form.bairro} onChange={handleChange} placeholder="Bairro" className="input-base" />
 
-        <input
-          name="cidade"
-          value={form.cidade}
-          onChange={handleChange}
-          placeholder="Cidade"
-          className="w-full border rounded-lg p-2 text-sm"
-        />
+        <input name="cidade" value={form.cidade} onChange={handleChange} placeholder="Cidade" className="input-base" />
 
-        <input
-          name="uf"
-          value={form.uf}
-          onChange={handleChange}
-          placeholder="UF"
-          className="w-full border rounded-lg p-2 text-sm"
-        />
+        <input name="uf" value={form.uf} onChange={handleChange} placeholder="UF" className="input-base" />
+
+        {/* 🔥 OBRIGATÓRIO */}
+        <div className="grid grid-cols-2 gap-3">
+          <input name="lat" value={form.lat} onChange={handleChange} placeholder="Latitude" className="input-base" />
+          <input name="lon" value={form.lon} onChange={handleChange} placeholder="Longitude" className="input-base" />
+        </div>
 
       </div>
 
       <div className="flex gap-3">
 
-        <button
-          onClick={salvar}
-          disabled={saving}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 disabled:opacity-50"
-        >
+        <button onClick={salvar} disabled={saving} className="btn-primary">
           {saving ? "Salvando..." : "Salvar"}
         </button>
 
         <button
           onClick={() => router.push("/cadastros/consultores")}
-          className="border px-4 py-2 rounded-lg text-sm"
+          className="btn-secondary"
         >
           Cancelar
         </button>

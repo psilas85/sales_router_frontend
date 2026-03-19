@@ -1,7 +1,5 @@
 //sales_router_frontend/app/(dashboard)/cadastros/page.tsx
 
-// sales_router_frontend/app/(dashboard)/cadastros/page.tsx
-
 "use client";
 
 import { useEffect, useState } from "react";
