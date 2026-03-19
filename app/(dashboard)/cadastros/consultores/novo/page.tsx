@@ -1,5 +1,3 @@
-//sales_router_frontend/app/(dashboard)/cadastros/consultores/novo/page.tsx
-
 "use client";
 
 import { useState } from "react";
@@ -33,6 +31,10 @@ export default function NovoConsultorPage() {
     });
   }
 
+  function onlyNumbers(value: string) {
+    return value.replace(/\D/g, "");
+  }
+
   function validar() {
 
     if (!form.lat || !form.lon) {
@@ -45,6 +47,16 @@ export default function NovoConsultorPage() {
 
     if (isNaN(lat) || isNaN(lon)) {
       alert("Lat/Lon inválidos");
+      return false;
+    }
+
+    if (onlyNumbers(form.cpf).length !== 11) {
+      alert("CPF inválido");
+      return false;
+    }
+
+    if (onlyNumbers(form.cep).length !== 8) {
+      alert("CEP inválido");
       return false;
     }
 
@@ -61,6 +73,8 @@ export default function NovoConsultorPage() {
 
       await criarConsultor({
         ...form,
+        cpf: onlyNumbers(form.cpf),
+        cep: onlyNumbers(form.cep),
         lat: parseFloat(form.lat),
         lon: parseFloat(form.lon),
       });
@@ -108,7 +122,6 @@ export default function NovoConsultorPage() {
 
         <input name="uf" value={form.uf} onChange={handleChange} placeholder="UF" className="input-base" />
 
-        {/* 🔥 NOVO */}
         <div className="grid grid-cols-2 gap-3">
           <input name="lat" value={form.lat} onChange={handleChange} placeholder="Latitude (-23.55...)" className="input-base" />
           <input name="lon" value={form.lon} onChange={handleChange} placeholder="Longitude (-46.63...)" className="input-base" />

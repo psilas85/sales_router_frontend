@@ -1,5 +1,3 @@
-// sales_router_frontend/app/(dashboard)/cadastros/consultores/[id]/page.tsx
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -35,6 +33,10 @@ export default function EditarConsultorPage() {
 
   function parseNumber(value: string) {
     return Number(value.replace(",", "."));
+  }
+
+  function onlyNumbers(value: string) {
+    return value.replace(/\D/g, "");
   }
 
   async function carregar() {
@@ -85,6 +87,11 @@ export default function EditarConsultorPage() {
       return false;
     }
 
+    if (onlyNumbers(form.cep).length !== 8) {
+      alert("CEP inválido");
+      return false;
+    }
+
     return true;
   }
 
@@ -98,6 +105,8 @@ export default function EditarConsultorPage() {
 
       await atualizarConsultor(id, {
         ...form,
+        cpf: onlyNumbers(form.cpf),
+        cep: onlyNumbers(form.cep),
         lat: parseNumber(form.lat),
         lon: parseNumber(form.lon),
       });
@@ -157,7 +166,6 @@ export default function EditarConsultorPage() {
 
         <input name="uf" value={form.uf} onChange={handleChange} placeholder="UF" className="input-base" />
 
-        {/* 🔥 OBRIGATÓRIO */}
         <div className="grid grid-cols-2 gap-3">
           <input name="lat" value={form.lat} onChange={handleChange} placeholder="Latitude" className="input-base" />
           <input name="lon" value={form.lon} onChange={handleChange} placeholder="Longitude" className="input-base" />
