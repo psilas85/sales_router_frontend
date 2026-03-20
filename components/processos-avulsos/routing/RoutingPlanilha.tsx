@@ -240,6 +240,13 @@ export default function RoutingPlanilha() {
           {loading ? "Processando..." : "Enviar planilha"}
         </button>
 
+        <button
+          onClick={() => window.open("/routing-engine/api/v1/template", "_blank")}
+          className="px-4 py-2 border rounded text-sm text-blue-600 border-blue-200 hover:bg-blue-50"
+        >
+          Baixar template
+        </button>
+
         {job && (
           <button
             onClick={resetar}
@@ -247,9 +254,11 @@ export default function RoutingPlanilha() {
           >
             Novo upload
           </button>
+          
         )}
 
       </div>
+      
       
       <div className="bg-white rounded-xl shadow-sm border p-6 max-w-3xl">
 
