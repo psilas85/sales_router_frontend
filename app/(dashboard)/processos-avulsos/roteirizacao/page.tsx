@@ -6,7 +6,7 @@ import Title from "@/components/Title"
 export default function Page() {
   return (
     <div className="p-6">
-      <Title>Roteirização</Title>
+      <Title>Execução Operacional</Title>
       <RoutingPlanilha />
     </div>
   )

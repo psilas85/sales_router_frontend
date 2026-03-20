@@ -136,7 +136,7 @@ export default function SideBar() {
                 href="/processos-avulsos"
                 label="Geocodificação"
                 icon={<MapPin size={18} />}
-                active={isActive("/processos-avulsos")}
+                active={pathname === "/processos-avulsos"}
                 collapsed={false}
               />
 
@@ -144,7 +144,7 @@ export default function SideBar() {
                 href="/processos-avulsos/roteirizacao"
                 label="Roteirização"
                 icon={<MapPin size={18} />}
-                active={pathname.includes("tab=routing")}
+                active={pathname.startsWith("/processos-avulsos/roteirizacao")}
                 collapsed={false}
               />
 

@@ -36,6 +36,8 @@ export default function GeocodePlanilha() {
   const [uploading, setUploading] = useState(false)
   const [gerandoMapa, setGerandoMapa] = useState(false)
 
+  const [baixandoResultado, setBaixandoResultado] = useState(false)
+
   // =========================
   // 🔥 RECUPERA JOB AO ENTRAR NA TELA
   // =========================
@@ -184,6 +186,20 @@ export default function GeocodePlanilha() {
     intervalRef.current = interval
   }
   
+  async function baixarResultado() {
+    if (!job?.job_id) return
+
+    setBaixandoResultado(true)
+
+    try {
+      await downloadGeocode(job.job_id)
+    } catch (err) {
+      console.error("Erro ao baixar resultado", err)
+    } finally {
+      setBaixandoResultado(false)
+    }
+  }
+    
   async function gerarMapa() {
 
     if (!job?.job_id) return
@@ -311,10 +327,12 @@ export default function GeocodePlanilha() {
             <div className="flex gap-3 pt-2">
 
               <button
-                onClick={() => downloadGeocode(job.job_id)}
-                className="px-4 py-2 bg-green-600 text-white rounded-md text-sm"
+                onClick={baixarResultado}
+                disabled={baixandoResultado}
+                className="px-4 py-2 bg-green-600 text-white rounded-md text-sm flex items-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
-                Baixar resultado
+                {baixandoResultado && <span className="animate-spin">⬇️</span>}
+                {baixandoResultado ? "Baixando..." : "Baixar resultado"}
               </button>
 
               {!mapLoaded && (
