@@ -27,18 +27,30 @@ export default function RoutingPlanilha() {
   const [mapLoaded, setMapLoaded] = useState(false)
 
   const fileInputRef = useRef<HTMLInputElement | null>(null)
-  const [intervalId, setIntervalId] = useState<any>(null)
+  const intervalRef = useRef<any>(null)
+
+  const [baixando, setBaixando] = useState(false)
 
   // evita memory leak
   useEffect(() => {
+
+    const jobId = localStorage.getItem("routing_job_id")
+
+    if (jobId) {
+      acompanhar(jobId)
+    }
+
     return () => {
-      if (intervalId) {
-        clearInterval(intervalId)
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current)
       }
     }
-  }, [intervalId])
+
+  }, [])
 
   function resetar() {
+
+    localStorage.removeItem("routing_job_id")
 
     setFile(null)
     setJob(null)
@@ -50,8 +62,8 @@ export default function RoutingPlanilha() {
       fileInputRef.current.value = ""
     }
 
-    if (intervalId) {
-      clearInterval(intervalId)
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current)
     }
   }
 
@@ -64,6 +76,8 @@ export default function RoutingPlanilha() {
     try {
 
       const res = await uploadRouting(file)
+
+      localStorage.setItem("routing_job_id", res.job_id)
 
       setJob({
         job_id: res.job_id,
@@ -82,7 +96,16 @@ export default function RoutingPlanilha() {
 
   async function acompanhar(job_id: string) {
 
-    if (intervalId) clearInterval(intervalId)
+    setJob({
+      job_id,
+      status: "loading",
+      progress: 0,
+      step: "Recuperando estado..."
+    })
+
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current)
+    }
 
     const interval = setInterval(async () => {
 
@@ -90,20 +113,32 @@ export default function RoutingPlanilha() {
 
         const status = await routingJobStatus(job_id)
 
-        if (status.status === "finished") {
+        const isFinished = status.status === "finished"
+        const isFailed = status.status === "failed"
 
-          setJob({
-            ...status,
-            progress: 100,
-            step: "Concluído"
-          })
-
-          setLoading(false)
-          clearInterval(interval)
-          return
+        const jobCorrigido = {
+          ...status,
+          progress: isFinished ? 100 : status.progress ?? 0,
+          step: isFinished
+            ? "Concluído"
+            : isFailed
+            ? "Erro na execução"
+            : status.step ?? "Processando..."
         }
 
-        setJob(status)
+        setJob(jobCorrigido)
+
+        if (isFinished || isFailed) {
+
+          localStorage.removeItem("routing_job_id")
+
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current)
+            intervalRef.current = null
+          }
+
+          setLoading(false)
+        }
 
       } catch (err) {
         console.error("Erro no status:", err)
@@ -111,7 +146,22 @@ export default function RoutingPlanilha() {
 
     }, 2000)
 
-    setIntervalId(interval)
+    intervalRef.current = interval
+  }
+
+  async function baixarResultado() {
+
+    if (!job?.job_id) return
+
+    setBaixando(true)
+
+    try {
+      await downloadRouting(job.job_id)
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setBaixando(false)
+    }
   }
 
   async function gerarMapa() {
@@ -197,15 +247,24 @@ export default function RoutingPlanilha() {
             />
           </div>
 
+          {job && job.status !== "finished" && job.status !== "failed" && (
+            <div className="text-xs text-blue-600 flex items-center gap-2">
+              <span className="animate-spin">⏳</span>
+              Processando em background...
+            </div>
+          )}
+
           {job.status === "finished" && (
 
             <div className="flex gap-3">
 
               <button
-                onClick={() => downloadRouting(job.job_id)}
-                className="bg-green-600 text-white px-4 py-2 rounded"
+                onClick={baixarResultado}
+                disabled={baixando}
+                className="bg-green-600 text-white px-4 py-2 rounded flex items-center gap-2 disabled:bg-gray-400"
               >
-                Baixar resultado
+                {baixando && <span className="animate-spin">⬇️</span>}
+                {baixando ? "Baixando..." : "Baixar resultado"}
               </button>
 
               {!mapLoaded && (
