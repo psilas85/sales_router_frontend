@@ -261,6 +261,16 @@ export default function GeocodePlanilha() {
           {uploading && <span className="animate-spin">⏳</span>}
           {uploading ? "Enviando..." : "Enviar planilha"}
         </button>
+
+        <a
+          href="/templates/geocodificacao_operacional_upload.xlsx"
+          target="_blank"
+          title="Baixar modelo padrão para geocodificação"
+          className="px-4 py-2 border rounded text-sm text-blue-600 border-blue-200 hover:bg-blue-50"
+        >
+          Baixar template
+        </a>
+
         {job && (
           <button
             onClick={resetar}
