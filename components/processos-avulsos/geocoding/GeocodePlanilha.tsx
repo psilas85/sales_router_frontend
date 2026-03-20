@@ -33,6 +33,9 @@ export default function GeocodePlanilha() {
 
   const intervalRef = useRef<any>(null)
 
+  const [uploading, setUploading] = useState(false)
+  const [gerandoMapa, setGerandoMapa] = useState(false)
+
   // =========================
   // 🔥 RECUPERA JOB AO ENTRAR NA TELA
   // =========================
@@ -90,21 +93,32 @@ export default function GeocodePlanilha() {
 
     if (!file) return
 
-    setLoading(true)
+    setUploading(true)
 
-    const res = await uploadGeocode(file)
+    try {
 
-    // 🔥 salva no localStorage
-    localStorage.setItem("geocode_job_id", res.job_id)
+      const res = await uploadGeocode(file)
 
-    setJob({
-      job_id: res.job_id,
-      status: "queued",
-      progress: 0,
-      step: "Enfileirado"
-    })
+      localStorage.setItem("geocode_job_id", res.job_id)
 
-    acompanhar(res.job_id)
+      setJob({
+        job_id: res.job_id,
+        status: "queued",
+        progress: 0,
+        step: "Enfileirado"
+      })
+
+      acompanhar(res.job_id)
+
+    } catch (err) {
+
+      console.error(err)
+
+    } finally {
+
+      setUploading(false)
+
+    }
   }
 
   async function acompanhar(job_id: string) {
@@ -126,9 +140,22 @@ export default function GeocodePlanilha() {
 
         const status = await jobStatus(job_id)
 
-        setJob(status)
+        const isFinished = status.status === "finished"
+        const isFailed = status.status === "failed"
 
-        if (status.status === "finished" || status.status === "failed") {
+        const jobCorrigido = {
+          ...status,
+          progress: isFinished ? 100 : status.progress ?? 0,
+          step: isFinished
+            ? "Concluído"
+            : isFailed
+            ? "Erro na execução"
+            : status.step ?? "Processando..."
+        }
+
+        setJob(jobCorrigido)
+
+        if (isFinished || isFailed) {
 
           if (status.result) {
             setResumo({
@@ -140,8 +167,10 @@ export default function GeocodePlanilha() {
 
           localStorage.removeItem("geocode_job_id")
 
-          clearInterval(intervalRef.current)
-          intervalRef.current = null
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current)
+            intervalRef.current = null
+          }
 
           setLoading(false)
         }
@@ -154,10 +183,12 @@ export default function GeocodePlanilha() {
 
     intervalRef.current = interval
   }
-
+  
   async function gerarMapa() {
 
     if (!job?.job_id) return
+
+    setGerandoMapa(true)
 
     try {
 
@@ -171,6 +202,10 @@ export default function GeocodePlanilha() {
     } catch (err) {
 
       console.error("Erro ao carregar pontos para mapa", err)
+
+    } finally {
+
+      setGerandoMapa(false)
 
     }
 
@@ -204,12 +239,12 @@ export default function GeocodePlanilha() {
 
         <button
           onClick={enviar}
-          disabled={!file || loading}
-          className="bg-blue-600 text-white px-4 py-2 rounded disabled:bg-gray-400 disabled:cursor-not-allowed"
+          disabled={!file || uploading}
+          className="bg-blue-600 text-white px-4 py-2 rounded disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
         >
-          Enviar planilha
+          {uploading && <span className="animate-spin">⏳</span>}
+          {uploading ? "Enviando..." : "Enviar planilha"}
         </button>
-
         {job && (
           <button
             onClick={resetar}
@@ -250,6 +285,13 @@ export default function GeocodePlanilha() {
             {job.progress ?? 0}% concluído
           </div>
 
+        
+          {job && job.status !== "finished" && job.status !== "failed" && (
+            <div className="text-xs text-blue-600">
+              🔄 Processando em background...
+            </div>
+          )}
+
           {resumo && (
 
             <div className="grid grid-cols-3 gap-3 pt-2">
@@ -279,9 +321,11 @@ export default function GeocodePlanilha() {
 
                 <button
                   onClick={gerarMapa}
-                  className="px-4 py-2 bg-purple-600 text-white rounded-md text-sm"
+                  disabled={gerandoMapa}
+                  className="px-4 py-2 bg-purple-600 text-white rounded-md text-sm flex items-center gap-2 disabled:bg-gray-400"
                 >
-                  Gerar mapa
+                  {gerandoMapa && <span className="animate-spin">🗺️</span>}
+                  {gerandoMapa ? "Gerando mapa..." : "Gerar mapa"}
                 </button>
 
               )}
