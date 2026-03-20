@@ -30,6 +30,15 @@ export default function RoutingPlanilha() {
   const intervalRef = useRef<any>(null)
 
   const [baixando, setBaixando] = useState(false)
+  const [gerandoMapa, setGerandoMapa] = useState(false)
+
+  const [params, setParams] = useState({
+    dias_uteis: 21,
+    freq_visita: 1,
+    min_pdvs_rota: 8,
+    max_pdvs_rota: 12,
+    aplicar_two_opt: false
+  })
 
   // evita memory leak
   useEffect(() => {
@@ -75,7 +84,7 @@ export default function RoutingPlanilha() {
 
     try {
 
-      const res = await uploadRouting(file)
+      const res = await uploadRouting(file, params)
 
       localStorage.setItem("routing_job_id", res.job_id)
 
@@ -168,6 +177,8 @@ export default function RoutingPlanilha() {
 
     if (!job?.job_id) return
 
+    setGerandoMapa(true)
+
     try {
 
       const res = await api.get(
@@ -185,8 +196,15 @@ export default function RoutingPlanilha() {
       setMapLoaded(true)
 
     } catch (err) {
+
       console.error("Erro ao carregar mapa", err)
+
+    } finally {
+
+      setGerandoMapa(false)
+
     }
+
   }
 
   return (
@@ -227,6 +245,69 @@ export default function RoutingPlanilha() {
             Novo upload
           </button>
         )}
+
+      </div>
+      
+      <div className="border rounded-lg p-4 space-y-3 max-w-3xl">
+
+        <h4 className="text-sm font-semibold text-gray-700">
+          Parâmetros da roteirização
+        </h4>
+
+        <div className="grid grid-cols-2 gap-3">
+
+          <input
+            type="number"
+            placeholder="Dias úteis"
+            value={params.dias_uteis}
+            onChange={(e) =>
+              setParams({ ...params, dias_uteis: Number(e.target.value) })
+            }
+            className="border px-3 py-2 rounded text-sm"
+          />
+
+          <input
+            type="number"
+            placeholder="Frequência visita"
+            value={params.freq_visita}
+            onChange={(e) =>
+              setParams({ ...params, freq_visita: Number(e.target.value) })
+            }
+            className="border px-3 py-2 rounded text-sm"
+          />
+
+          <input
+            type="number"
+            placeholder="Mín PDVs"
+            value={params.min_pdvs_rota}
+            onChange={(e) =>
+              setParams({ ...params, min_pdvs_rota: Number(e.target.value) })
+            }
+            className="border px-3 py-2 rounded text-sm"
+          />
+
+          <input
+            type="number"
+            placeholder="Máx PDVs"
+            value={params.max_pdvs_rota}
+            onChange={(e) =>
+              setParams({ ...params, max_pdvs_rota: Number(e.target.value) })
+            }
+            className="border px-3 py-2 rounded text-sm"
+          />
+
+        </div>
+
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={params.aplicar_two_opt}
+            onChange={(e) =>
+              setParams({ ...params, aplicar_two_opt: e.target.checked })
+            }
+          />
+          Otimização 2-opt
+        </label>
 
       </div>
 
@@ -270,9 +351,11 @@ export default function RoutingPlanilha() {
               {!mapLoaded && (
                 <button
                   onClick={gerarMapa}
-                  className="bg-purple-600 text-white px-4 py-2 rounded"
+                  disabled={gerandoMapa}
+                  className="bg-purple-600 text-white px-4 py-2 rounded flex items-center gap-2 disabled:bg-gray-400"
                 >
-                  Gerar mapa
+                  {gerandoMapa && <span className="animate-spin">🗺️</span>}
+                  {gerandoMapa ? "Gerando mapa..." : "Gerar mapa"}
                 </button>
               )}
 

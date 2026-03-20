@@ -2,10 +2,15 @@
 
 import api from "./api"
 
-export async function uploadRouting(file: File) {
+export async function uploadRouting(file: File, params?: any) {
 
   const form = new FormData()
+
   form.append("file", file)
+
+  if (params) {
+    form.append("params", JSON.stringify(params))
+  }
 
   const res = await api.post(
     "/routing-engine/api/v1/upload",
