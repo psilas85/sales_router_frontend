@@ -134,7 +134,11 @@ export default function RoutingPlanilha() {
             : status.step ?? "Processando..."
         }
 
-        setJob(jobCorrigido)
+        setJob((prev: any) => ({
+          ...prev,
+          ...jobCorrigido,
+          summary: jobCorrigido.summary ?? prev?.summary
+        }))
 
         if (isFinished || isFailed) {
 
@@ -311,12 +315,7 @@ export default function RoutingPlanilha() {
             />
           </div>
 
-        </div>
-
-        <div className="mt-4 text-xs text-gray-500 bg-gray-50 p-3 rounded">
-          Rotas menores → mais veículos e menor tempo por rota <br/>
-          Rotas maiores → menos veículos e maior tempo por rota
-        </div>
+        </div>      
 
       </div>
 
@@ -326,7 +325,17 @@ export default function RoutingPlanilha() {
         <div className="bg-white border rounded-xl p-4 space-y-4 max-w-3xl">
 
           <div className="flex justify-between">
-            <span>Status: {job.status}</span>
+            <span>
+              Status: {
+                job.status === "finished"
+                  ? "Concluído"
+                  : job.status === "failed"
+                  ? "Erro"
+                  : job.status === "queued"
+                  ? "Na fila"
+                  : "Processando"
+              }
+            </span>
             <span>{job.step}</span>
           </div>
 
@@ -336,6 +345,44 @@ export default function RoutingPlanilha() {
               style={{ width: `${job.progress ?? 0}%` }}
             />
           </div>
+
+          {job?.summary && job.status === "finished" && (
+
+            <div className="grid grid-cols-2 gap-3 text-sm bg-gray-50 p-3 rounded">
+
+              <div>
+                <span className="text-gray-500">PDVs:</span>
+                <span className="ml-2 font-medium">
+                  {job.summary.total_pdvs ?? "-"}
+                </span>
+              </div>
+
+              <div>
+                <span className="text-gray-500">Rotas:</span>
+                <span className="ml-2 font-medium">
+                  {job.summary.total_rotas ?? "-"}
+                </span>
+              </div>
+
+              <div>
+                <span className="text-gray-500">Grupos:</span>
+                <span className="ml-2 font-medium">
+                  {job.summary.total_grupos ?? "-"}
+                </span>
+              </div>
+
+              <div>
+                <span className="text-gray-500">Tempo:</span>
+                <span className="ml-2 font-medium">
+                  {job.summary.tempo_execucao_ms
+                    ? (job.summary.tempo_execucao_ms / 1000).toFixed(1) + "s"
+                    : "-"}
+                </span>
+              </div>
+
+            </div>
+
+          )}
 
           {job && job.status !== "finished" && job.status !== "failed" && (
             <div className="text-xs text-blue-600 flex items-center gap-2">
@@ -375,6 +422,8 @@ export default function RoutingPlanilha() {
         </div>
 
       )}
+
+      
 
       {/* MAPA */}
       {mapLoaded && geojson && (
