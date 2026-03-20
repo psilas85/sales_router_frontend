@@ -36,8 +36,7 @@ export default function RoutingPlanilha() {
     dias_uteis: 21,
     freq_visita: 1,
     min_pdvs_rota: 8,
-    max_pdvs_rota: 12,
-    aplicar_two_opt: false
+    max_pdvs_rota: 12
   })
 
   // evita memory leak
@@ -248,66 +247,76 @@ export default function RoutingPlanilha() {
 
       </div>
       
-      <div className="border rounded-lg p-4 space-y-3 max-w-3xl">
+      <div className="bg-white rounded-xl shadow-sm border p-6 max-w-3xl">
 
-        <h4 className="text-sm font-semibold text-gray-700">
+        <h4 className="text-base font-semibold mb-4">
           Parâmetros da roteirização
         </h4>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-4">
 
-          <input
-            type="number"
-            placeholder="Dias úteis"
-            value={params.dias_uteis}
-            onChange={(e) =>
-              setParams({ ...params, dias_uteis: Number(e.target.value) })
-            }
-            className="border px-3 py-2 rounded text-sm"
-          />
+          <div>
+            <label className="text-xs text-gray-500">
+              Dias úteis no ciclo
+            </label>
+            <input
+              type="number"
+              value={params.dias_uteis}
+              onChange={(e) =>
+                setParams({ ...params, dias_uteis: Number(e.target.value) })
+              }
+              className="border px-3 py-2 rounded text-sm w-full"
+            />
+          </div>
 
-          <input
-            type="number"
-            placeholder="Frequência visita"
-            value={params.freq_visita}
-            onChange={(e) =>
-              setParams({ ...params, freq_visita: Number(e.target.value) })
-            }
-            className="border px-3 py-2 rounded text-sm"
-          />
+          <div>
+            <label className="text-xs text-gray-500">
+              Frequência de visita
+            </label>
+            <input
+              type="number"
+              value={params.freq_visita}
+              onChange={(e) =>
+                setParams({ ...params, freq_visita: Number(e.target.value) })
+              }
+              className="border px-3 py-2 rounded text-sm w-full"
+            />
+          </div>
 
-          <input
-            type="number"
-            placeholder="Mín PDVs"
-            value={params.min_pdvs_rota}
-            onChange={(e) =>
-              setParams({ ...params, min_pdvs_rota: Number(e.target.value) })
-            }
-            className="border px-3 py-2 rounded text-sm"
-          />
+          <div>
+            <label className="text-xs text-gray-500">
+              Mínimo de PDVs por rota
+            </label>
+            <input
+              type="number"
+              value={params.min_pdvs_rota}
+              onChange={(e) =>
+                setParams({ ...params, min_pdvs_rota: Number(e.target.value) })
+              }
+              className="border px-3 py-2 rounded text-sm w-full"
+            />
+          </div>
 
-          <input
-            type="number"
-            placeholder="Máx PDVs"
-            value={params.max_pdvs_rota}
-            onChange={(e) =>
-              setParams({ ...params, max_pdvs_rota: Number(e.target.value) })
-            }
-            className="border px-3 py-2 rounded text-sm"
-          />
+          <div>
+            <label className="text-xs text-gray-500">
+              Máximo de PDVs por rota
+            </label>
+            <input
+              type="number"
+              value={params.max_pdvs_rota}
+              onChange={(e) =>
+                setParams({ ...params, max_pdvs_rota: Number(e.target.value) })
+              }
+              className="border px-3 py-2 rounded text-sm w-full"
+            />
+          </div>
 
         </div>
 
-        <label className="flex items-center gap-2 text-sm">
-          <input
-            type="checkbox"
-            checked={params.aplicar_two_opt}
-            onChange={(e) =>
-              setParams({ ...params, aplicar_two_opt: e.target.checked })
-            }
-          />
-          Otimização 2-opt
-        </label>
+        <div className="mt-4 text-xs text-gray-500 bg-gray-50 p-3 rounded">
+          Rotas menores → mais veículos e menor tempo por rota <br/>
+          Rotas maiores → menos veículos e maior tempo por rota
+        </div>
 
       </div>
 
