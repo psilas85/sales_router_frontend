@@ -240,12 +240,13 @@ export default function RoutingPlanilha() {
           {loading ? "Processando..." : "Enviar planilha"}
         </button>
 
-        <button
-          onClick={() => window.open("/routing-engine/api/v1/template", "_blank")}
+        <a
+          href="/templates/template_routing.xlsx"
+          target="_blank"
           className="px-4 py-2 border rounded text-sm text-blue-600 border-blue-200 hover:bg-blue-50"
         >
           Baixar template
-        </button>
+        </a>
 
         {job && (
           <button
