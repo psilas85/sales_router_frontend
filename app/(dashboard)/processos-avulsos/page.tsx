@@ -18,7 +18,7 @@ export default function Page() {
 
     <div className="p-6">
 
-      <Title>Processos Avulsos</Title>
+      <Title>Execução Operacional</Title>
 
       {/* TABS */}
       <div className="flex gap-8 mt-8 border-b">

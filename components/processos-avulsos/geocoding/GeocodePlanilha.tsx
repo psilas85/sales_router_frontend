@@ -2,7 +2,7 @@
 
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { uploadGeocode, jobStatus, downloadGeocode } from "@/services/geocoding"
 import api from "@/services/api"
 import dynamic from "next/dynamic"
@@ -31,9 +31,31 @@ export default function GeocodePlanilha() {
 
   const fileInputRef = useRef<HTMLInputElement | null>(null)
 
-  const [intervalId, setIntervalId] = useState<any>(null)
+  const intervalRef = useRef<any>(null)
+
+  // =========================
+  // 🔥 RECUPERA JOB AO ENTRAR NA TELA
+  // =========================
+  useEffect(() => {
+
+    const jobId = localStorage.getItem("geocode_job_id")
+
+    if (jobId) {
+      acompanhar(jobId)
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current)
+      }
+    }
+
+  }, [])
 
   function resetar() {
+
+    localStorage.removeItem("geocode_job_id")
+
     setFile(null)
     setJob(null)
     setResumo(null)
@@ -44,8 +66,9 @@ export default function GeocodePlanilha() {
     if (fileInputRef.current) {
       fileInputRef.current.value = ""
     }
-    if (intervalId) {
-      clearInterval(intervalId)
+
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current)
     }
   }
 
@@ -56,15 +79,11 @@ export default function GeocodePlanilha() {
     const result: any[] = []
 
     for (let i = 0; i < n; i++) {
-
       const index = Math.floor(Math.random() * array.length)
-
       result.push(array[index])
-
     }
 
     return result
-
   }
 
   async function enviar() {
@@ -75,6 +94,9 @@ export default function GeocodePlanilha() {
 
     const res = await uploadGeocode(file)
 
+    // 🔥 salva no localStorage
+    localStorage.setItem("geocode_job_id", res.job_id)
+
     setJob({
       job_id: res.job_id,
       status: "queued",
@@ -83,50 +105,54 @@ export default function GeocodePlanilha() {
     })
 
     acompanhar(res.job_id)
-
   }
 
   async function acompanhar(job_id: string) {
 
-    let ativo = true
+    setJob({
+      job_id,
+      status: "loading",
+      progress: 0,
+      step: "Recuperando estado..."
+    })
 
-    if (intervalId) {
-      clearInterval(intervalId)
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current)
     }
 
     const interval = setInterval(async () => {
 
-      if (!ativo) return
+      try {
 
-      const status = await jobStatus(job_id)
+        const status = await jobStatus(job_id)
 
-      if (status.status === "finished") {
+        setJob(status)
 
-        setJob({
-          ...status,
-          progress: 100,
-          step: "Concluído"
-        })
+        if (status.status === "finished" || status.status === "failed") {
 
-        if (status.result) {
-          setResumo({
-            total: status.result.total,
-            sucesso: status.result.sucesso,
-            falhas: status.result.falhas
-          })
+          if (status.result) {
+            setResumo({
+              total: status.result.total,
+              sucesso: status.result.sucesso,
+              falhas: status.result.falhas
+            })
+          }
+
+          localStorage.removeItem("geocode_job_id")
+
+          clearInterval(intervalRef.current)
+          intervalRef.current = null
+
+          setLoading(false)
         }
 
-        setLoading(false)
-        ativo = false
-        clearInterval(interval)
-        return
+      } catch (err) {
+        console.error("Erro ao consultar status", err)
       }
-
-      setJob(status)
 
     }, 2000)
 
-    setIntervalId(interval)
+    intervalRef.current = interval
   }
 
   async function gerarMapa() {
@@ -140,7 +166,6 @@ export default function GeocodePlanilha() {
       const sample = sampleRandom(res.data, 1000)
 
       setPontosMapa(sample)
-
       setMapLoaded(true)
 
     } catch (err) {
@@ -155,8 +180,6 @@ export default function GeocodePlanilha() {
 
     <div className="space-y-8">
 
-      {/* HEADER */}
-
       <div>
 
         <h3 className="text-lg font-semibold">
@@ -168,8 +191,6 @@ export default function GeocodePlanilha() {
         </p>
 
       </div>
-
-      {/* UPLOAD */}
 
       <div className="flex gap-3 items-center flex-wrap">
 
@@ -200,8 +221,6 @@ export default function GeocodePlanilha() {
 
       </div>
 
-      {/* STATUS */}
-
       {job && (
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 space-y-4 max-w-3xl">
@@ -218,8 +237,6 @@ export default function GeocodePlanilha() {
 
           </div>
 
-          {/* PROGRESS BAR */}
-
           <div className="w-full bg-gray-200 rounded-full h-3">
 
             <div
@@ -233,34 +250,19 @@ export default function GeocodePlanilha() {
             {job.progress ?? 0}% concluído
           </div>
 
-          {/* RESUMO */}
-
           {resumo && (
 
             <div className="grid grid-cols-3 gap-3 pt-2">
 
-              <ResumoBox
-                label="Total"
-                value={resumo.total ?? 0}
-              />
+              <ResumoBox label="Total" value={resumo.total ?? 0} />
 
-              <ResumoBox
-                label="Geocodificados"
-                value={resumo.sucesso ?? 0}
-                green
-              />
+              <ResumoBox label="Geocodificados" value={resumo.sucesso ?? 0} green />
 
-              <ResumoBox
-                label="Inválidos"
-                value={resumo.falhas ?? 0}
-                red
-              />
+              <ResumoBox label="Inválidos" value={resumo.falhas ?? 0} red />
 
             </div>
 
           )}
-
-          {/* AÇÕES */}
 
           {job.status === "finished" && (
 
@@ -291,8 +293,6 @@ export default function GeocodePlanilha() {
         </div>
 
       )}
-
-      {/* MAPA */}
 
       {mapLoaded && pontosMapa.length > 0 && (
 
@@ -341,13 +341,9 @@ function ResumoBox({
 
     <div className={`rounded-lg border px-4 py-3 text-center ${color}`}>
 
-      <p className="text-xs">
-        {label}
-      </p>
+      <p className="text-xs">{label}</p>
 
-      <p className="text-lg font-semibold">
-        {value}
-      </p>
+      <p className="text-lg font-semibold">{value}</p>
 
     </div>
 
